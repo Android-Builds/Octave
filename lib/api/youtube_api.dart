@@ -514,7 +514,7 @@ class YoutubeMusicApi {
 
     //log(response.body);
 
-    return 1;
+    return response;
   }
 
   ///Get queue from playlist id and song id

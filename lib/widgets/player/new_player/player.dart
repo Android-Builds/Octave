@@ -28,8 +28,6 @@ class _PlayerState extends State<Player> {
           final PlaybackState playbackState = snapshot.data[0];
           final MediaItem mediaItem = snapshot.data[1];
           final PositionData positionData = snapshot.data[2];
-          final stopped =
-              playbackState.processingState == AudioProcessingState.idle;
           return Miniplayer(
             controller: PlayerManager.miniplayerController,
             backgroundColor: Theme.of(context).colorScheme.background,

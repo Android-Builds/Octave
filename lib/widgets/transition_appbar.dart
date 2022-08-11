@@ -22,15 +22,6 @@ class TransitionAppBar extends StatelessWidget {
 }
 
 class _TransitionAppBarDelegate extends SliverPersistentHeaderDelegate {
-  final _avatarMarginTween = EdgeInsetsTween(
-    end: const EdgeInsets.only(left: 14.0, top: 36.0),
-  );
-
-  final _titleMarginTween = EdgeInsetsTween(
-    begin: const EdgeInsets.only(bottom: 20),
-    end: const EdgeInsets.only(left: 64.0, top: 45.0),
-  );
-
   final _avatarAlignTween = AlignmentTween(begin: Alignment.bottomCenter);
 
   final Widget avatar;
@@ -46,8 +37,6 @@ class _TransitionAppBarDelegate extends SliverPersistentHeaderDelegate {
       BuildContext context, double shrinkOffset, bool overlapsContent) {
     double tempVal = 72 * maxExtent / 100;
     final progress = shrinkOffset > tempVal ? 1.0 : shrinkOffset / tempVal;
-    final avatarMargin = _avatarMarginTween.lerp(progress);
-    final titleMargin = _titleMarginTween.lerp(progress);
 
     final avatarAlign = _avatarAlignTween.lerp(progress);
 

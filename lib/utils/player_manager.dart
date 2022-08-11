@@ -2,15 +2,11 @@
 
 import 'package:audio_service/audio_service.dart';
 import 'package:beats/api/youtube_api.dart';
-import 'package:beats/classes/trending_songs.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:miniplayer/miniplayer.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 import 'package:miniplayer/miniplayer.dart' as mp;
 
-import '../blocs/task_execution_bloc/task_execution_bloc.dart';
 import '../widgets/player/common.dart';
 import '../services/audio_service.dart';
 import 'package:rxdart/rxdart.dart';

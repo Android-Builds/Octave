@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 class TrendingSong {
   final String videoId;
   final String thumbnail;
@@ -27,7 +25,6 @@ class TrendingSong {
             ['navigationEndpoint']['watchEndpoint']['playlistId'];
 
   static List<TrendingSong> getTrendingSongsList(List<dynamic> contentsMap) {
-    //log(contentsMap.toString());
     List<TrendingSong> trendingSongs = List<TrendingSong>.from(
         contentsMap.map((i) => TrendingSong.fromJson(i)));
 

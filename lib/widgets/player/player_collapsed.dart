@@ -2,14 +2,10 @@ import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
-import 'common.dart';
-import '../../services/audio_service.dart';
 import '../../utils/player_manager.dart';
-import 'player_expaned.dart';
 
 class PlayerCollapsed extends StatelessWidget {
   const PlayerCollapsed({Key? key}) : super(key: key);
@@ -18,8 +14,6 @@ class PlayerCollapsed extends StatelessWidget {
   Widget build(BuildContext context) {
     ValueNotifier<double> pos = ValueNotifier<double>(0);
     double height;
-    double bottom = 10;
-    double left = 30;
     double width = PlayerManager.size.width * 0.85;
     return StreamBuilder<PlaybackState>(
       stream: PlayerManager.audioHandler.playbackState,
@@ -59,8 +53,6 @@ class PlayerCollapsed extends StatelessWidget {
                     valueListenable: pos,
                     builder: (context, double value, child) {
                       height = value * (PlayerManager.size.height * 0.5);
-                      bottom = max(10, value * 230);
-                      left = 30.0 + 20 * (1 - value);
                       width = max(60, PlayerManager.size.width * 0.85 * value);
                       return Column(
                         mainAxisAlignment: MainAxisAlignment.start,

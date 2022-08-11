@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages
+
 import 'package:beats/api/youtube_api.dart';
 import 'package:beats/classes/search_result.dart';
 import 'package:collection/collection.dart';
