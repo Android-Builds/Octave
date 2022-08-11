@@ -1,4 +1,4 @@
-import 'package:beats/pages/homepage.dart';
+import 'package:beats/pages/dashboard_page.dart';
 import 'package:beats/utils/theme.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
             theme: AppTheme.theme(lightDynamic, Brightness.light),
             darkTheme: AppTheme.theme(darkDynamic, Brightness.dark),
             debugShowCheckedModeBanner: false,
-            home: const HomePage(),
+            home: const Dashboard(),
           );
         },
       ),

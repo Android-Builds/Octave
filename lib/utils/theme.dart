@@ -38,6 +38,9 @@ class AppTheme {
           ),
         ),
       ),
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+        unselectedItemColor: Colors.grey,
+      ),
       dialogTheme: DialogTheme(
         elevation: 10.0,
         backgroundColor: scheme.background,

@@ -1,94 +1,67 @@
-import 'package:beats/pages/landing_page.dart';
-import 'package:beats/widgets/player/new_player/player.dart';
+import 'package:audio_service/audio_service.dart';
+import 'package:beats/pages/discover_page.dart';
+import 'package:beats/widgets/for_you_widget.dart';
 import 'package:flutter/material.dart';
 
+import '../classes/universal_search_delegate.dart';
 import '../utils/player_manager.dart';
+import '../widgets/spotify_top_charts.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  @override
-  void initState() {
-    PlayerManager.homePage = true;
-    PlayerManager.navbarHeight.value = kBottomNavigationBarHeight;
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    PlayerManager.size = MediaQuery.of(context).size;
-    return WillPopScope(
-      onWillPop: () async {
-        final NavigatorState navigator =
-            PlayerManager.navigatorKey.currentState!;
-        if (!navigator.canPop()) return true;
-        navigator.pop();
-        return false;
-      },
-      child: Scaffold(
-        body: Stack(
-          children: <Widget>[
-            Navigator(
-              key: PlayerManager.navigatorKey,
-              onGenerateRoute: (RouteSettings settings) => MaterialPageRoute(
-                settings: settings,
-                builder: (BuildContext context) => const LandingPage(),
-              ),
+    return NestedScrollView(
+      headerSliverBuilder: (context, innerBoxIsScrolled) {
+        return [
+          SliverAppBar(
+            title: const Text(
+              'Beats',
+              style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            const Player(),
-          ],
-        ),
-        bottomNavigationBar: ValueListenableBuilder(
-          valueListenable: PlayerManager.playerExpandProgress,
-          builder: (BuildContext context, double height, Widget? child) {
-            final value = PlayerManager.percentageFromValueInRange(
-              min: kBottomNavigationBarHeight,
-              max: PlayerManager.size.height,
-              value: height,
-            );
-
-            var opacity = 1 - value;
-            if (opacity < 0) opacity = 0;
-            if (opacity > 1) opacity = 1;
-
-            return SizedBox(
-              height: kBottomNavigationBarHeight -
-                  kBottomNavigationBarHeight * value,
-              child: Transform.translate(
-                offset: Offset(0.0, kBottomNavigationBarHeight * value * 0.5),
-                child: Opacity(
-                  opacity: opacity,
-                  child: OverflowBox(
-                    maxHeight: kBottomNavigationBarHeight * 1.1,
-                    child: child,
-                  ),
-                ),
-              ),
-            );
-          },
-          child: BottomNavigationBar(
-            backgroundColor: ElevationOverlay.colorWithOverlay(
-              Theme.of(context).colorScheme.surface,
-              Theme.of(context).colorScheme.primary,
-              3.0,
-            ),
-            onTap: (int index) => PlayerManager.navbarIndex.value = index,
-            items: const [
-              BottomNavigationBarItem(
-                icon: Icon(Icons.explore),
-                label: 'Explore',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.trending_up),
-                label: 'Trending',
-              ),
+            actions: [
+              IconButton(
+                onPressed: () {
+                  PlayerManager.homePage = false;
+                  Future.delayed(const Duration(milliseconds: 50),
+                      () => PlayerManager.navbarHeight.value = 0);
+                  showSearch(
+                    context: context,
+                    delegate: UniversalSearchDelegate(),
+                  );
+                },
+                icon: const Icon(Icons.search),
+              )
             ],
+            snap: true,
+            pinned: false,
+            floating: true,
           ),
+        ];
+      },
+      body: ValueListenableBuilder(
+        valueListenable: PlayerManager.navbarIndex,
+        builder: (context, int value, child) => ListView(
+          shrinkWrap: true,
+          children: [
+            const <Widget>[
+              ForYouWidget(),
+              DiscoverPage(),
+              SpotifyTopCharts(),
+            ][value],
+            StreamBuilder<PlaybackState>(
+              stream: PlayerManager.audioHandler.playbackState,
+              builder: (context, snapshot) {
+                final playbackState = snapshot.data;
+                final stopped =
+                    playbackState?.processingState == AudioProcessingState.idle;
+                return SizedBox(
+                  height: stopped ? 0 : kBottomNavigationBarHeight,
+                );
+              },
+            ),
+          ],
         ),
       ),
     );

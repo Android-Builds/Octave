@@ -117,14 +117,6 @@ class YoutubeMusicApi {
     }
 
     return SongPlayList(title, subtitle, thumbnail, items);
-    // log(resp.toString());
-    // var playlist =
-    //     await _youtubeExplode.playlists.get(playlistId.replaceAll('VL', ''));
-    // List<Video> playlistSongs = [];
-    // await for (var song in _youtubeExplode.playlists.getVideos(playlist.id)) {
-    //   playlistSongs.add(song);
-    // }
-    // return [playlist, playlistSongs];
   }
 
   /*
@@ -267,6 +259,35 @@ class YoutubeMusicApi {
     parsedData.removeWhere((element) => element.isEmpty);
     parsedData.insert(1, parsedData.removeAt(0));
     return parsedData;
+  }
+
+  static Future<List<dynamic>> getMoodsAndGenres() async {
+    Map responseMap = await browse('FEmusic_moods_and_genres');
+    List contents = responseMap['contents']['singleColumnBrowseResultsRenderer']
+            ['tabs'][0]['tabRenderer']['content']['sectionListRenderer']
+        ['contents'];
+    List moodsOrGenres = [];
+    for (var element in contents) {
+      List items = [];
+      for (var item in (element['gridRenderer']['items'] as List)) {
+        items.add({
+          'title': listToText(
+              item['musicNavigationButtonRenderer']['buttonText']['runs']),
+          'color': item['musicNavigationButtonRenderer']['solid']
+              ['leftStripeColor'],
+          'browswId': item['musicNavigationButtonRenderer']['clickCommand']
+              ['browseEndpoint']['browseId'],
+          'params': item['musicNavigationButtonRenderer']['clickCommand']
+              ['browseEndpoint']['params'],
+        });
+      }
+      moodsOrGenres.add({
+        'title': listToText(element['gridRenderer']['header']
+            ['gridHeaderRenderer']['title']['runs']),
+        'items': items,
+      });
+    }
+    return moodsOrGenres;
   }
 
   /*
@@ -436,7 +457,8 @@ class YoutubeMusicApi {
     return searchResults;
   }
 
-  static Future<Map<dynamic, dynamic>> browse(String browseId) async {
+  static Future<Map<dynamic, dynamic>> browse(String browseId,
+      [String? params]) async {
     Uri browseLink = Uri.https('music.youtube.com', '/youtubei/v1/browse', {
       'key': 'AIzaSyC9XL3ZjWddXya6X74dJoCTL-WEYFDNX30',
       'prettyPrint': 'false',
@@ -446,6 +468,10 @@ class YoutubeMusicApi {
       'context': context,
       'browseId': browseId,
     };
+
+    if (params != null) {
+      body['params'] = params;
+    }
 
     Map<dynamic, dynamic> responseMap = await getResponse(browseLink, body);
 
