@@ -38,10 +38,6 @@ class MyApp extends StatelessWidget {
             darkTheme: AppTheme.theme(darkDynamic, Brightness.dark),
             debugShowCheckedModeBanner: false,
             home: const HomePage(),
-            // builder: (context, child) {
-            //   PlayerManager.size = MediaQuery.of(context).size;
-            //   return AppDefinitions(child: child);
-            // },
           );
         },
       ),

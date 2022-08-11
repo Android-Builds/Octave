@@ -1,4 +1,5 @@
 import 'package:beats/api/youtube_api.dart';
+import 'package:beats/classes/playlist.dart';
 import 'package:beats/utils/player_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
@@ -37,8 +38,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
           future: YoutubeMusicApi.getPlaylist(widget.playlistId),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.hasData) {
-              Playlist playlist = snapshot.data[0];
-              List<Video> playlistSongs = snapshot.data[1];
+              SongPlayList playlist = snapshot.data;
               return NestedScrollView(
                 headerSliverBuilder:
                     (BuildContext context, bool innerBoxIsScrolled) {
@@ -59,8 +59,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                Text(
-                                    '${playlist.videoCount} Songs \u00B7 ${getDuration(playlistSongs)}')
+                                Text(playlist.subtitle)
                               ],
                             ),
                             TextButton(
@@ -79,8 +78,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                             padding: const EdgeInsets.all(20),
                           ),
                           onPressed: () async {
-                            PlayerManager.playFromPlaylist(
-                                playlistSongs, playlist);
+                            PlayerManager.addToPlaylistAndPlay(playlist.items);
                           },
                           child: const Icon(Icons.play_arrow),
                         ),
@@ -93,25 +91,34 @@ class _PlaylistPageState extends State<PlaylistPage> {
                 body: ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  itemCount: playlistSongs.length,
+                  itemCount: playlist.items.length,
                   itemBuilder: (context, index) {
                     return ListTile(
+                      onTap: () {
+                        if (PlayerManager
+                            .audioHandler.playbackState.valueOrNull!.playing) {
+                          PlayerManager.audioHandler.skipToQueueItem(index);
+                        } else {
+                          PlayerManager.addToPlaylistAndPlay(
+                              playlist.items, index);
+                        }
+                      },
                       leading: ClipRRect(
                         borderRadius: BorderRadius.circular(5.0),
                         child: Image.network(
-                          playlistSongs[index].thumbnails.lowResUrl,
-                          height: 50.0,
-                          width: 60.0,
+                          playlist.items[index].artUri.toString(),
+                          height: PlayerManager.size.width * 0.15,
+                          width: PlayerManager.size.width * 0.15,
                           fit: BoxFit.cover,
                         ),
                       ),
                       title: Text(
-                        formatSongTitle(playlistSongs[index].title),
+                        formatSongTitle(playlist.items[index].title),
                         maxLines: 1,
                         overflow: TextOverflow.clip,
                       ),
-                      subtitle: Text('${playlistSongs[index].author} \u00B7'
-                          '${RegExp(r'((^0*[1-9]\d*:)?\d{2}:\d{2})\.\d+$').firstMatch("${playlistSongs[index].duration}")?.group(1)}'),
+                      subtitle: Text('${playlist.items[index].artist} \u2022 '
+                          '${RegExp(r'((^0*[1-9]\d*:)?\d{2}:\d{2})\.\d+$').firstMatch("${playlist.items[index].duration}")?.group(1)}'),
                     );
                   },
                 ),
@@ -139,19 +146,30 @@ class _PlaylistPageState extends State<PlaylistPage> {
 
   formatSongTitle(String text) {
     String title = text
+        .replaceAll("#", '')
+        .replaceAll(' |', ', ')
+        .replaceAll(' ,', ',')
+        .replaceAll('   ', ' ')
         .replaceAll('Video', '')
+        .replaceAll('VIDEO', '')
         .replaceAll('Full ', '')
         .replaceAll('Official ', '')
-        .replaceAll('- |', '|')
-        .replaceAll('\u2013 |', '|')
-        .replaceAll(' |', ', ')
-        .replaceAll('@', '')
-        .replaceAll('()', '')
-        .replaceAll('( )', '')
-        .replaceAll('  ', ' ')
-        .replaceAllMapped(RegExp(r'[a-z]{0}:.'), (match) => '');
+        .replaceAll(' -  - ', ' - ')
+        .replaceAllMapped(RegExp(r',\s{0,1}[a-z]*'), (match) => '')
+        .trim();
+    // .replaceAll('- |', '|')
+    // .replaceAll('\u2013 |', '|')
+    // .replaceAll('@', '')
+    // .replaceAll('()', '')
+    // .replaceAll('( )', '')
+    // .replaceAll('  ', ' ')
+    // .replaceAll("#", '')
+    // .replaceAll(' |', ', ')
+    // .replaceAllMapped(RegExp(r'[a-z]{0}:.'), (match) => '')
+    // .replaceAllMapped(RegExp(r',\s{0,1}[a-z]*'), (match) => '')
+    // .trim();
 
-    return title;
+    return '${title.substring(0, 1).toUpperCase()}${title.substring(1)}';
   }
 
   @override

@@ -52,17 +52,21 @@ class CollapsedPlayer extends StatelessWidget {
             child: Row(
               children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 5.0),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 5.0,
+                    horizontal: 5.0,
+                  ),
                   child: ConstrainedBox(
                     constraints: BoxConstraints(
                       maxHeight: Constants.maxImgSize,
                       maxWidth: Constants.maxImgSize,
                     ),
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10.0),
+                      borderRadius: BorderRadius.circular(5.0),
                       child: CachedNetworkImage(
                         height: height,
                         width: height,
+                        fit: BoxFit.cover,
                         imageUrl: mediaItem.artUri.toString(),
                       ),
                     ),

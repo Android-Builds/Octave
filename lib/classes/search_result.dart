@@ -7,9 +7,9 @@ class SearchResult {
 
   ///browse Id for all except videos and music
   final String entityId;
-  final String playlisId;
+  final String playlistId;
   final SearchType searchType;
 
   SearchResult(this.title, this.subtitle, this.thumbnail, this.entityId,
-      this.playlisId, this.searchType);
+      this.playlistId, this.searchType);
 }

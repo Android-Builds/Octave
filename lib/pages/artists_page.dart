@@ -108,22 +108,26 @@ class _ArtistsPageState extends State<ArtistsPage> {
                       : null,
                 ),
                 videoList(artist.songs),
-                ListTile(
-                  title: Text(
-                    'Albums',
-                    style: TextStyle(
-                      fontSize: PlayerManager.size.width * 0.05,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  trailing: artist.playlistBrowseId.isNotEmpty
-                      ? TextButton(
-                          child: const Text('More'),
-                          onPressed: () {},
-                        )
-                      : null,
-                ),
-                albumList(artist.albums),
+                artist.albums.isNotEmpty
+                    ? ListTile(
+                        title: Text(
+                          'Albums',
+                          style: TextStyle(
+                            fontSize: PlayerManager.size.width * 0.05,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        trailing: artist.playlistBrowseId.isNotEmpty
+                            ? TextButton(
+                                child: const Text('More'),
+                                onPressed: () {},
+                              )
+                            : null,
+                      )
+                    : const SizedBox.shrink(),
+                artist.albums.isNotEmpty
+                    ? albumList(artist.albums)
+                    : const SizedBox.shrink(),
               ],
             );
           } else {

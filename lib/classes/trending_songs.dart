@@ -14,7 +14,8 @@ class TrendingSong {
       : videoId = json['musicResponsiveListItemRenderer']['playlistItemData']
             ['videoId'],
         thumbnail = json['musicResponsiveListItemRenderer']['thumbnail']
-            ['musicThumbnailRenderer']['thumbnail']['thumbnails'][0]['url'],
+                ['musicThumbnailRenderer']['thumbnail']['thumbnails']
+            .last['url'],
         title = json['musicResponsiveListItemRenderer']['flexColumns'][0]
                 ['musicResponsiveListItemFlexColumnRenderer']['text']['runs'][0]
             ['text'],

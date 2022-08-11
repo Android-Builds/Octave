@@ -25,20 +25,21 @@ class AppDefinitions extends StatelessWidget {
                 left: 0,
                 right: 0,
                 bottom: value,
-                child: BlocBuilder<TaskExecutionBloc, TaskExecutionState>(
-                  builder: (context, state) {
-                    if (state is TaskIsExecuting) {
-                      return Container(
-                        height: kBottomNavigationBarHeight * 1.5,
-                        color: Theme.of(context).colorScheme.background,
-                        child: Row(
-                          children: [Text(state.song.title)],
-                        ),
-                      );
-                    }
-                    return const PlayerCollapsed();
-                  },
-                ),
+                child: const PlayerCollapsed(),
+                // child: BlocBuilder<TaskExecutionBloc, TaskExecutionState>(
+                //   builder: (context, state) {
+                //     if (state is TaskIsExecuting) {
+                //       return Container(
+                //         height: kBottomNavigationBarHeight * 1.5,
+                //         color: Theme.of(context).colorScheme.background,
+                //         child: Row(
+                //           children: [Text(state.song.title)],
+                //         ),
+                //       );
+                //     }
+                //     return const PlayerCollapsed();
+                //   },
+                // ),
               );
             },
           ),

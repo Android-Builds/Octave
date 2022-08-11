@@ -24,6 +24,10 @@ class _HomePageState extends State<HomePage> {
     PlayerManager.size = MediaQuery.of(context).size;
     return WillPopScope(
       onWillPop: () async {
+        final NavigatorState navigator =
+            PlayerManager.navigatorKey.currentState!;
+        if (!navigator.canPop()) return true;
+        navigator.pop();
         return false;
       },
       child: Scaffold(

@@ -99,56 +99,31 @@ class PlayerManager {
     );
   }
 
-  static void playFromPlaylist(
-      List<Video> playlistSongs, Playlist playlist) async {
-    List<MediaItem> items = [];
-    for (var song in playlistSongs) {
-      items.add(
-        MediaItem(
-          id: song.id.value,
-          title: song.title,
-          artist: song.author,
-          duration: song.duration,
-          album: playlist.title,
-          artUri: Uri.parse(song.thumbnails.highResUrl),
-          extras: {
-            'playlistId': playlist.id.value,
-          },
-        ),
-      );
-    }
-    await _audioHandler.updateQueue(items);
-    await _audioHandler.skipToQueueItem(0);
-    _miniplayerController.animateToHeight(state: mp.PanelState.MAX);
-    //panelController.open();
-    await _audioHandler.play();
-  }
-
-  static Future<void> playMusic(BuildContext context, String musicId,
-      String playlistId, TrendingSong trendingSong, String playlistName) async {
+  static Future<void> playMusic(
+    String musicId,
+    String playlistId,
+    String playlistName,
+  ) async {
     if (_audioHandler.queue.value.isNotEmpty &&
         _audioHandler.mediaItem.value!.id == musicId) {
       _miniplayerController.animateToHeight(state: mp.PanelState.MAX);
     } else {
-      BlocProvider.of<TaskExecutionBloc>(context).add(
-        LoadSongAndPlaylistTask(trendingSong),
-      );
       MediaItem song = await YoutubeMusicApi.getPlayerDetails(
           playlistId, musicId, playlistName);
-      print(song.artUri.toString());
       List<MediaItem> items = await YoutubeMusicApi.getQueue(playlistId);
       items.insert(0, song);
-      await _audioHandler.updateQueue(items);
-      await _audioHandler.skipToQueueItem(0).then(
-            (value) => BlocProvider.of<TaskExecutionBloc>(context).add(
-              SongAndPlaylistLoaded(),
-            ),
-          );
-      await _audioHandler.play().then(
-            (value) =>
-                _miniplayerController.animateToHeight(state: mp.PanelState.MAX),
-          );
+      await addToPlaylistAndPlay(items);
       //panelController.open();
     }
+  }
+
+  static Future<void> addToPlaylistAndPlay(List<MediaItem> items,
+      [int? index]) async {
+    await _audioHandler.updateQueue(items);
+    await _audioHandler.skipToQueueItem(index ?? 0);
+    await _audioHandler.play().then(
+          (value) =>
+              _miniplayerController.animateToHeight(state: mp.PanelState.MAX),
+        );
   }
 }

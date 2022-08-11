@@ -126,6 +126,13 @@ class UniversalSearchDelegate extends SearchDelegate<String> {
                   ),
                 ),
               );
+            } else if (searchResult.searchType == SearchType.songs ||
+                searchResult.searchType == SearchType.videos) {
+              PlayerManager.playMusic(
+                searchResult.entityId,
+                searchResult.playlistId,
+                '',
+              );
             }
           },
           leading: ClipRRect(
