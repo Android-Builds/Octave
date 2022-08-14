@@ -1,3 +1,5 @@
+import 'package:beats/api/youtube_api.dart';
+
 class TrendingPlaylists {
   final String thumbnail;
   final String title;
@@ -13,11 +15,15 @@ class TrendingPlaylists {
 
   TrendingPlaylists.fromJson(Map<dynamic, dynamic> json)
       : thumbnail = json['musicTwoRowItemRenderer']['thumbnailRenderer']
-            ['musicThumbnailRenderer']['thumbnail']['thumbnails'][0]['url'],
-        title = json['musicTwoRowItemRenderer']['title']['runs'][0]['text'],
-        subtitle = (json['musicTwoRowItemRenderer']['subtitle']['runs'] as List)
-            .map((e) => e['text'])
-            .join(),
+                ['musicThumbnailRenderer']['thumbnail']['thumbnails']
+            .last['url']
+            .replaceAllMapped(
+                RegExp(r'w[0-9]{3,4}-h[0-9]{3,4}'), (match) => 'w300-h300')
+            .replaceAll('hqdefault', 'maxresdefault'),
+        title =
+            YoutubeMusicApi.mapToText(json['musicTwoRowItemRenderer']['title']),
+        subtitle = YoutubeMusicApi.mapToText(
+            json['musicTwoRowItemRenderer']['subtitle']),
         playlistId = json['musicTwoRowItemRenderer']['navigationEndpoint']
                 ['browseEndpoint']?['browseId'] ??
             json['musicTwoRowItemRenderer']['navigationEndpoint']

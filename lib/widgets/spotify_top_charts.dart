@@ -25,74 +25,79 @@ class _SpotifyTopChartsState extends State<SpotifyTopCharts> {
       children: [
         SizedBox(
           height: PlayerManager.size.height * 0.08,
-          child: ListView.builder(
-            shrinkWrap: true,
-            scrollDirection: Axis.horizontal,
-            itemCount: countryCodes.length + 1,
-            itemBuilder: (context, index) => Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5.0),
-              child: index < countryCodes.length
-                  ? ChoiceChip(
-                      padding: const EdgeInsets.all(5.0),
-                      label: Text(countryCodes.keys.elementAt(index)),
-                      selected: _value == index,
-                      onSelected: (bool selected) {
-                        setState(() {
-                          _value = selected ? index : 1;
-                        });
-                      },
-                    )
-                  : ActionChip(
-                      padding: const EdgeInsets.all(5.0),
-                      avatar: const Icon(Icons.add),
-                      label: const Text('Add'),
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              title: const Text('Add Country'),
-                              content: Wrap(
-                                children: [
-                                  TextField(
-                                    controller: _country,
-                                    decoration: const InputDecoration(
-                                      hintText: 'Country',
+          child: NotificationListener<OverscrollNotification>(
+            // Suppress OverscrollNotification events that escape from the inner scrollable
+            onNotification: (notification) =>
+                notification.metrics.axisDirection != AxisDirection.down,
+            child: ListView.builder(
+              shrinkWrap: true,
+              scrollDirection: Axis.horizontal,
+              itemCount: countryCodes.length + 1,
+              itemBuilder: (context, index) => Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                child: index < countryCodes.length
+                    ? ChoiceChip(
+                        padding: const EdgeInsets.all(5.0),
+                        label: Text(countryCodes.keys.elementAt(index)),
+                        selected: _value == index,
+                        onSelected: (bool selected) {
+                          setState(() {
+                            _value = selected ? index : 1;
+                          });
+                        },
+                      )
+                    : ActionChip(
+                        padding: const EdgeInsets.all(5.0),
+                        avatar: const Icon(Icons.add),
+                        label: const Text('Add'),
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: const Text('Add Country'),
+                                content: Wrap(
+                                  children: [
+                                    TextField(
+                                      controller: _country,
+                                      decoration: const InputDecoration(
+                                        hintText: 'Country',
+                                      ),
                                     ),
+                                    TextField(
+                                      controller: _url,
+                                      decoration: const InputDecoration(
+                                        hintText: 'Link to Top Songs Playlist',
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: const Text('Cancel'),
+                                    onPressed: () {
+                                      _url.clear();
+                                      _country.clear();
+                                      Navigator.pop(context);
+                                    },
                                   ),
-                                  TextField(
-                                    controller: _url,
-                                    decoration: const InputDecoration(
-                                      hintText: 'Link to Top Songs Playlist',
-                                    ),
+                                  TextButton(
+                                    child: const Text('Add'),
+                                    onPressed: () {
+                                      SpotifyApi.addToMap(_country.text,
+                                          _url.text.split('/').last);
+                                      _url.clear();
+                                      _country.clear();
+                                      Navigator.pop(context);
+                                      setState(() {});
+                                    },
                                   ),
                                 ],
-                              ),
-                              actions: <Widget>[
-                                TextButton(
-                                  child: const Text('Cancel'),
-                                  onPressed: () {
-                                    _url.clear();
-                                    _country.clear();
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                                TextButton(
-                                  child: const Text('Add'),
-                                  onPressed: () {
-                                    SpotifyApi.addToMap(_country.text,
-                                        _url.text.split('/').last);
-                                    _url.clear();
-                                    _country.clear();
-                                    Navigator.pop(context);
-                                    setState(() {});
-                                  },
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      }),
+                              );
+                            },
+                          );
+                        }),
+              ),
             ),
           ),
         ),

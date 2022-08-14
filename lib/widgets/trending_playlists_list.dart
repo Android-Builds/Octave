@@ -1,5 +1,4 @@
-import 'package:beats/utils/player_manager.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:beats/widgets/playlist_item.dart';
 import 'package:flutter/material.dart';
 
 import '../classes/trending_playlists.dart';
@@ -56,40 +55,11 @@ class TrendingPlaylistWidget extends StatelessWidget {
                       ),
                     );
                   },
-                  child: Container(
-                    padding: const EdgeInsets.all(10.0),
+                  child: PlaylistItem(
+                    title: trendingPlaylists[index].title,
+                    subtitle: trendingPlaylists[index].subtitle,
+                    thumbnail: trendingPlaylists[index].thumbnail,
                     width: 200.0,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(5.0),
-                          child: CachedNetworkImage(
-                            imageUrl: trendingPlaylists[index].thumbnail,
-                            height: 180,
-                            width: 180,
-                          ),
-                        ),
-                        const SizedBox(height: 10.0),
-                        Text(
-                          trendingPlaylists[index].title,
-                          maxLines: 2,
-                          style: const TextStyle(
-                            fontSize: 15.0,
-                          ),
-                        ),
-                        const SizedBox(height: 5.0),
-                        Text(
-                          trendingPlaylists[index].subtitle,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: PlayerManager.size.width * 0.033,
-                          ),
-                        ),
-                      ],
-                    ),
                   ),
                 );
               },

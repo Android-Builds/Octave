@@ -5,6 +5,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:beats/classes/artist.dart';
 import 'package:beats/classes/playlist.dart';
 import 'package:beats/classes/search_result.dart';
+import 'package:beats/classes/trending_artists.dart';
 import 'package:beats/classes/trending_playlists.dart';
 import 'package:http/http.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
@@ -52,7 +53,11 @@ class YoutubeMusicApi {
 
   static final YoutubeExplode _youtubeExplode = YoutubeExplode();
 
-  static String listToText(List<dynamic> textList) {
+  static String mapToText(Map textMap) {
+    List textList = textMap['runs'];
+    if (textList.first['text'] == 'Playlist') {
+      textList = textList.sublist(2);
+    }
     return textList.map((e) => e['text']).toList().join();
   }
 
@@ -80,7 +85,7 @@ class YoutubeMusicApi {
             ['thumbnails']
         .last['url'];
     String subtitle =
-        '${listToText(responseMap['header']['musicDetailHeaderRenderer']['subtitle']['runs'])}\n${listToText(responseMap['header']['musicDetailHeaderRenderer']['secondSubtitle']['runs'])}';
+        '${mapToText(responseMap['header']['musicDetailHeaderRenderer']['subtitle'])}\n${mapToText(responseMap['header']['musicDetailHeaderRenderer']['secondSubtitle'])}';
 
     List contents = responseMap['contents']['singleColumnBrowseResultsRenderer']
             ['tabs'][0]['tabRenderer']['content']['sectionListRenderer']
@@ -90,16 +95,16 @@ class YoutubeMusicApi {
 
     for (var content in contents) {
       content = content['musicResponsiveListItemRenderer'];
-      List<String> durationText = listToText(content['fixedColumns'][0]
-              ['musicResponsiveListItemFixedColumnRenderer']['text']['runs'])
+      List<String> durationText = mapToText(content['fixedColumns'][0]
+              ['musicResponsiveListItemFixedColumnRenderer']['text'])
           .split(':');
       items.add(
         MediaItem(
           id: content['playlistItemData']['videoId'],
-          title: listToText(content['flexColumns'][0]
-              ['musicResponsiveListItemFlexColumnRenderer']['text']['runs']),
-          artist: listToText(content['flexColumns'][1]
-              ['musicResponsiveListItemFlexColumnRenderer']['text']['runs']),
+          title: mapToText(content['flexColumns'][0]
+              ['musicResponsiveListItemFlexColumnRenderer']['text']),
+          artist: mapToText(content['flexColumns'][1]
+              ['musicResponsiveListItemFlexColumnRenderer']['text']),
           duration: Duration(
             minutes: int.parse(durationText[0]),
             seconds: int.parse(durationText[1]),
@@ -115,7 +120,6 @@ class YoutubeMusicApi {
         ),
       );
     }
-
     return SongPlayList(title, subtitle, thumbnail, items);
   }
 
@@ -143,7 +147,7 @@ class YoutubeMusicApi {
     return [channel, about, vids];
   }
 
-  static List<Map<String, Object>> parsePlaylistData(Map contentsMap) {
+  static List<Map<String, Object>> parseHomePageResponseData(Map contentsMap) {
     List<TrendingPlaylists> trendingPlaylists = [];
     List<TrendingSong> trendingSongs = [];
     String header = '';
@@ -223,7 +227,7 @@ class YoutubeMusicApi {
       if (contentsMap.containsKey('continuations')) {
         continuation = contentsMap['continuations'][0]['nextContinuationData']
             ['continuation'];
-        parsedData.addAll(parsePlaylistData(contentsMap));
+        parsedData.addAll(parseHomePageResponseData(contentsMap));
       }
     }
 
@@ -248,7 +252,7 @@ class YoutubeMusicApi {
     continuation =
         contentsMap['continuations'][0]['nextContinuationData']['continuation'];
 
-    List<Map<String, Object>> data = parsePlaylistData(contentsMap);
+    List<Map<String, Object>> data = parseHomePageResponseData(contentsMap);
     List<Map<String, Object>> parsedData = [];
     parsedData.addAll(data);
 
@@ -271,23 +275,124 @@ class YoutubeMusicApi {
       List items = [];
       for (var item in (element['gridRenderer']['items'] as List)) {
         items.add({
-          'title': listToText(
-              item['musicNavigationButtonRenderer']['buttonText']['runs']),
+          'title':
+              mapToText(item['musicNavigationButtonRenderer']['buttonText']),
           'color': item['musicNavigationButtonRenderer']['solid']
               ['leftStripeColor'],
-          'browswId': item['musicNavigationButtonRenderer']['clickCommand']
+          'browseId': item['musicNavigationButtonRenderer']['clickCommand']
               ['browseEndpoint']['browseId'],
           'params': item['musicNavigationButtonRenderer']['clickCommand']
               ['browseEndpoint']['params'],
         });
       }
       moodsOrGenres.add({
-        'title': listToText(element['gridRenderer']['header']
-            ['gridHeaderRenderer']['title']['runs']),
+        'title': mapToText(
+            element['gridRenderer']['header']['gridHeaderRenderer']['title']),
         'items': items,
       });
     }
     return moodsOrGenres;
+  }
+
+  static Future<List<dynamic>> getPlaylistFromMoodOrGenre(
+      String browseId, String params) async {
+    List contents = (await browse(browseId, {'params': params}))['contents']
+            ['singleColumnBrowseResultsRenderer']['tabs']
+        .first['tabRenderer']['content']['sectionListRenderer']['contents'];
+    List items = [];
+    for (var content in contents) {
+      List playlists = [];
+      for (var item in (content['gridRenderer']['items'] as List)) {
+        item = item['musicTwoRowItemRenderer'];
+        playlists.add({
+          'title': mapToText(item['title']),
+          'subtitle': mapToText(item['subtitle']),
+          'browseId': item['navigationEndpoint']['browseEndpoint']['browseId'],
+          'thumbnail': item['thumbnailRenderer']['musicThumbnailRenderer']
+                  ['thumbnail']['thumbnails']
+              .last['url'],
+        });
+      }
+      items.add({
+        'title': mapToText(
+            content['gridRenderer']['header']['gridHeaderRenderer']['title']),
+        'playlists': playlists,
+      });
+    }
+    return items;
+  }
+
+  static Future<List<Map<dynamic, dynamic>>> getTrendingCountries() async {
+    Map responseMap =
+        await browse('FEmusic_charts', {'params': 'sgYPRkVtdXNpY19leHBsb3Jl'});
+    List countries = responseMap['contents']
+                ['singleColumnBrowseResultsRenderer']['tabs']
+            .first['tabRenderer']['content']['sectionListRenderer']['contents']
+            .first['musicShelfRenderer']['subheaders']
+            .first['musicSideAlignedItemRenderer']['startItems']
+            .first['musicSortFilterButtonRenderer']['menu']
+        ['musicMultiSelectMenuRenderer']['options'];
+    countries.removeWhere((element) =>
+        (element as Map).containsKey('musicMenuItemDividerRenderer'));
+    countries = countries.sublist(1);
+    List codes =
+        responseMap['frameworkUpdates']['entityBatchUpdate']['mutations'];
+    codes.removeWhere((code) =>
+        !(code['payload'] as Map).containsKey('musicFormBooleanChoice'));
+
+    List<Map<dynamic, dynamic>> countryCodes = [];
+    for (var country in countries) {
+      country = country['musicMultiSelectMenuItemRenderer'];
+      var countryCode = (codes
+          .where((code) => code['entityKey'] == country['formItemEntityKey'])
+          .first)['payload']['musicFormBooleanChoice']['opaqueToken'];
+      countryCodes.add({
+        'country': mapToText(country['title']),
+        'code': countryCode,
+      });
+    }
+
+    return countryCodes;
+  }
+
+  static Future<List<Map<dynamic, dynamic>>> getTrending(
+      String countryCode) async {
+    String title = '';
+    List<dynamic> items = [];
+    List<Map<dynamic, dynamic>> trendingItems = [];
+
+    Map extraParams = {
+      'formData': {
+        'selectedValues': [countryCode],
+      },
+      'navigationType': 'BROWSE_NAVIGATION_TYPE_LOAD_IN_PLACE',
+      'params': 'sgYPRkVtdXNpY19leHBsb3Jl'
+    };
+    List trendingContents =
+        (await browse('FEmusic_charts', extraParams))['contents']
+                ['singleColumnBrowseResultsRenderer']['tabs']
+            .first['tabRenderer']['content']['sectionListRenderer']['contents'];
+    trendingContents.removeWhere((e) => e.containsKey('musicShelfRenderer'));
+
+    for (var content in trendingContents) {
+      items = [];
+      title = mapToText(content['musicCarouselShelfRenderer']['header']
+          ['musicCarouselShelfBasicHeaderRenderer']['title']);
+      if (title.contains('artists')) {
+        items = TrendingArtist.getTrendingArtistsList(
+            content['musicCarouselShelfRenderer']['contents']);
+      } else if (title.contains('songs') ||
+          title.contains('videos') ||
+          title.toLowerCase().contains('trending')) {
+        items = TrendingSong.getTrendingSongsList(
+            content['musicCarouselShelfRenderer']['contents']);
+      }
+      trendingItems.add({
+        'title': title,
+        'items': items,
+      });
+    }
+    return trendingItems;
   }
 
   /*
@@ -458,7 +563,7 @@ class YoutubeMusicApi {
   }
 
   static Future<Map<dynamic, dynamic>> browse(String browseId,
-      [String? params]) async {
+      [Map? extraParams]) async {
     Uri browseLink = Uri.https('music.youtube.com', '/youtubei/v1/browse', {
       'key': 'AIzaSyC9XL3ZjWddXya6X74dJoCTL-WEYFDNX30',
       'prettyPrint': 'false',
@@ -469,8 +574,8 @@ class YoutubeMusicApi {
       'browseId': browseId,
     };
 
-    if (params != null) {
-      body['params'] = params;
+    if (extraParams != null) {
+      body.addAll(extraParams);
     }
 
     Map<dynamic, dynamic> responseMap = await getResponse(browseLink, body);
@@ -623,7 +728,13 @@ class YoutubeMusicApi {
       duration: Duration(
         seconds: int.parse(responseMap['lengthSeconds']),
       ),
-      artUri: Uri.parse(responseMap['thumbnail']['thumbnails'].last['url']),
+      artUri: Uri.parse(
+        responseMap['thumbnail']['thumbnails']
+            .last['url']
+            .replaceAllMapped(
+                RegExp(r'w[0-9]{3,4}-h[0-9]{3,4}'), (match) => 'w900-h900')
+            .replaceAll('maxresdefault', 'hqdefault'),
+      ),
       extras: {
         'playlistId': playlistId,
       },
@@ -646,7 +757,7 @@ class YoutubeMusicApi {
             ['thumbnail']['musicThumbnailRenderer']['thumbnail']['thumbnails']
         .last['url']
         .replaceAllMapped(
-            RegExp(r'w[0-9]{3,4}-h[0-9]{3}'), (match) => 'w900-h900');
+            RegExp(r'w[0-9]{3,4}-h[0-9]{3,4}'), (match) => 'w900-h900');
 
     List contents = responseMap['contents']['singleColumnBrowseResultsRenderer']
             ['tabs'][0]['tabRenderer']['content']['sectionListRenderer']

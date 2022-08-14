@@ -1,11 +1,11 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:beats/pages/discover_page.dart';
+import 'package:beats/pages/trending_page.dart';
 import 'package:beats/widgets/for_you_widget.dart';
 import 'package:flutter/material.dart';
 
 import '../classes/universal_search_delegate.dart';
 import '../utils/player_manager.dart';
-import '../widgets/spotify_top_charts.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -48,7 +48,7 @@ class HomePage extends StatelessWidget {
             const <Widget>[
               ForYouWidget(),
               DiscoverPage(),
-              SpotifyTopCharts(),
+              TrendingPage(),
             ][value],
             StreamBuilder<PlaybackState>(
               stream: PlayerManager.audioHandler.playbackState,

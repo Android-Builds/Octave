@@ -39,7 +39,7 @@ class _ArtistsPageState extends State<ArtistsPage> {
               padding: const EdgeInsets.all(10.0),
               children: [
                 Container(
-                  height: 200.0,
+                  height: PlayerManager.size.width * 0.4,
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       image: DecorationImage(

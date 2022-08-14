@@ -1,4 +1,5 @@
 import 'package:beats/api/youtube_api.dart';
+import 'package:beats/pages/moods_and_genre.dart';
 import 'package:flutter/material.dart';
 
 import '../utils/player_manager.dart';
@@ -43,15 +44,26 @@ class _DiscoverPageState extends State<DiscoverPage> {
                     crossAxisCount: 2,
                     childAspectRatio: 2.5,
                   ),
-                  itemBuilder: (context, internalIndex) => Card(
-                    color: Color(moodsAndGenres[index]['items'][internalIndex]
-                            ['color'])
-                        .withOpacity(0.1),
-                    child: Center(
-                      child: Text(
-                        moodsAndGenres[index]['items'][internalIndex]['title'],
-                        style: TextStyle(
-                            fontSize: PlayerManager.size.width * 0.04),
+                  itemBuilder: (context, internalIndex) => InkWell(
+                    onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MoodsAndGenres(
+                            moodsAndGenreMap: moodsAndGenres[index]['items']
+                                [internalIndex],
+                          ),
+                        )),
+                    child: Card(
+                      color: Color(moodsAndGenres[index]['items'][internalIndex]
+                              ['color'])
+                          .withOpacity(0.1),
+                      child: Center(
+                        child: Text(
+                          moodsAndGenres[index]['items'][internalIndex]
+                              ['title'],
+                          style: TextStyle(
+                              fontSize: PlayerManager.size.width * 0.04),
+                        ),
                       ),
                     ),
                   ),
