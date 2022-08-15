@@ -16,6 +16,8 @@ dependencies:
   google_fonts: ^3.0.1
   sliding_up_panel: ^2.0.0+1
   miniplayer: ^1.0.1
+  ionicons: ^0.2.1
+  font_awesome_flutter: ^10.1.0
   
   audio_service: ^0.18.6
   just_audio: ^0.9.26

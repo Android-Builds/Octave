@@ -4,6 +4,7 @@ import 'package:beats/widgets/marquee_widget.dart';
 import 'package:beats/widgets/player/player_playlist.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:miniplayer/miniplayer.dart';
 
 import '../common.dart';
@@ -117,6 +118,15 @@ class ExpandedPlayer extends StatelessWidget {
                   width: imageSize,
                   fit: BoxFit.cover,
                   imageUrl: mediaItem.artUri.toString(),
+                  errorWidget: (context, url, error) => CachedNetworkImage(
+                    height: imageSize,
+                    width: imageSize,
+                    fit: BoxFit.cover,
+                    imageUrl: url
+                        .replaceAllMapped(RegExp(r'w[0-9]{3,4}-h[0-9]{3,4}'),
+                            (match) => 'w120-h120')
+                        .replaceAll('maxresdefault', 'hqdefault'),
+                  ),
                 ),
               ),
             ),
@@ -186,12 +196,17 @@ class ExpandedPlayer extends StatelessWidget {
                         opacity: opacity,
                         child: SizedBox(
                           height: PlayerManager.size.height * 0.2,
-                          width: PlayerManager.size.width * 0.3,
+                          width: PlayerManager.size.width * 0.4,
                           child: Card(
                             elevation: 4.0,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
+                                IconButton(
+                                  onPressed: () => showPlayList(context),
+                                  color: Colors.grey,
+                                  icon: const Icon(Icons.favorite_outline),
+                                ),
                                 IconButton(
                                   onPressed: () => showPlayList(context),
                                   color: Colors.grey,

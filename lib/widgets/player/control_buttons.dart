@@ -1,6 +1,8 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:beats/utils/player_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:ionicons/ionicons.dart';
 
 import '../../services/audio_service.dart';
 
@@ -22,9 +24,9 @@ class ControlButtons extends StatelessWidget {
           builder: (context, snapshot) {
             final repeatMode = snapshot.data ?? AudioServiceRepeatMode.none;
             const icons = [
-              Icon(Icons.repeat, color: Colors.grey),
-              Icon(Icons.repeat, color: Colors.orange),
-              Icon(Icons.repeat_one, color: Colors.orange),
+              Icon(Ionicons.repeat, color: Colors.grey),
+              Icon(Ionicons.repeat, color: Colors.orange),
+              RepeatOnceIcon(color: Colors.orange),
             ];
             const cycleModes = [
               AudioServiceRepeatMode.none,
@@ -46,7 +48,10 @@ class ControlButtons extends StatelessWidget {
           builder: (context, snapshot) {
             final queueState = snapshot.data ?? QueueState.empty;
             return IconButton(
-              icon: const Icon(Icons.skip_previous),
+              icon: const Icon(
+                FontAwesomeIcons.angleLeft,
+                size: 20.0,
+              ),
               onPressed:
                   queueState.hasPrevious ? audioHandler.skipToPrevious : null,
             );
@@ -71,7 +76,7 @@ class ControlButtons extends StatelessWidget {
                     )
                   : playing != true
                       ? IconButton(
-                          icon: const Icon(Icons.play_arrow),
+                          icon: const Icon(Ionicons.play),
                           onPressed: audioHandler.play,
                         )
                       : IconButton(
@@ -86,7 +91,10 @@ class ControlButtons extends StatelessWidget {
           builder: (context, snapshot) {
             final queueState = snapshot.data ?? QueueState.empty;
             return IconButton(
-              icon: const Icon(Icons.skip_next),
+              icon: const Icon(
+                FontAwesomeIcons.angleRight,
+                size: 20.0,
+              ),
               onPressed: queueState.hasNext ? audioHandler.skipToNext : null,
             );
           },
@@ -99,8 +107,8 @@ class ControlButtons extends StatelessWidget {
             final shuffleModeEnabled = snapshot.data ?? false;
             return IconButton(
               icon: shuffleModeEnabled
-                  ? const Icon(Icons.shuffle, color: Colors.orange)
-                  : const Icon(Icons.shuffle, color: Colors.grey),
+                  ? const Icon(Ionicons.shuffle, color: Colors.orange)
+                  : const Icon(Ionicons.shuffle, color: Colors.grey),
               onPressed: () async {
                 final enable = !shuffleModeEnabled;
                 await audioHandler.setShuffleMode(enable
@@ -109,6 +117,36 @@ class ControlButtons extends StatelessWidget {
               },
             );
           },
+        ),
+      ],
+    );
+  }
+}
+
+class RepeatOnceIcon extends StatelessWidget {
+  const RepeatOnceIcon({
+    Key? key,
+    this.color,
+    this.size,
+  }) : super(key: key);
+
+  final Color? color;
+  final Size? size;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Icon(Ionicons.repeat, color: color),
+        Positioned(
+          right: -7,
+          child: Text(
+            '1',
+            style: TextStyle(
+              color: color,
+            ),
+          ),
         ),
       ],
     );

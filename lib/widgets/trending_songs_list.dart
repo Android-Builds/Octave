@@ -49,6 +49,8 @@ class TrendingSongsListWidget extends StatelessWidget {
                 return SongAndArtistItem(
                   title: trendingSongs[index].title,
                   subtitle: trendingSongs[index].subtitle,
+                  browseId: trendingSongs[index].videoId,
+                  playlistId: trendingSongs[index].playlistId,
                   thumbnail: trendingSongs[index].thumbnail,
                   width: PlayerManager.size.width * 0.3,
                 );

@@ -45,12 +45,6 @@ class YoutubeMusicApi {
     },
   };
 
-  static late Map responseMap;
-  static late String tracking;
-  static late Map contentsMap;
-  static late String continuation;
-  static String visitorData = '';
-
   static final YoutubeExplode _youtubeExplode = YoutubeExplode();
 
   static String mapToText(Map textMap) {
@@ -64,14 +58,6 @@ class YoutubeMusicApi {
   /*
    * Playlist Section 
    */
-
-  static Future<Playlist> getPlaylistInfo(String playlistId) async {
-    return await _youtubeExplode.playlists.get(playlistId.replaceAll('VL', ''));
-  }
-
-  static Stream<Video> getPlayListSongs(String playlistId) {
-    return _youtubeExplode.playlists.getVideos(playlistId.replaceAll('VL', ''));
-  }
 
   static Future<SongPlayList> getPlaylist(String playlistId) async {
     Map<dynamic, dynamic> responseMap = await browse(playlistId);
@@ -201,7 +187,11 @@ class YoutubeMusicApi {
     return jsonDecode(response.body);
   }
 
-  static Future<List<Map<String, Object>>> getContinuationData() async {
+  static Future<List<Map<String, Object>>> getContinuationData(
+    String continuation,
+    String tracking,
+    String visitorData,
+  ) async {
     Uri nextLink = Uri.https('music.youtube.com', 'youtubei/v1/browse', {
       'ctoken': continuation,
       'continuation': continuation,
@@ -217,11 +207,11 @@ class YoutubeMusicApi {
 
     List<Map<String, Object>> parsedData = [];
 
-    responseMap = await getResponse(nextLink, _body);
+    Map responseMap = await getResponse(nextLink, _body);
     if (responseMap['continuationContents'] != null &&
         (responseMap['continuationContents'] as Map)
             .containsKey('sectionListContinuation')) {
-      contentsMap =
+      Map contentsMap =
           responseMap['continuationContents']['sectionListContinuation'];
       tracking = contentsMap['trackingParams'];
       if (contentsMap.containsKey('continuations')) {
@@ -235,28 +225,33 @@ class YoutubeMusicApi {
   }
 
   static Future getHomePage() async {
+    String visitorData = '';
+
     final Uri link = Uri.https('music.youtube.com', '/youtubei/v1/browse', {
       'key': 'AIzaSyC9XL3ZjWddXya6X74dJoCTL-WEYFDNX30',
       'prettyPrint': 'false',
     });
 
     _body['browseId'] = 'FEmusic_home';
-    responseMap = await getResponse(link, _body);
-    tracking = responseMap['trackingParams'];
+    Map responseMap = await getResponse(link, _body);
+    String tracking = responseMap['trackingParams'];
     if ((responseMap['responseContext'] as Map).containsKey('visitorData')) {
       visitorData = responseMap['responseContext']['visitorData'];
       context['client']['visitorData'] = visitorData;
     }
-    contentsMap = responseMap['contents']['singleColumnBrowseResultsRenderer']
-        ['tabs'][0]['tabRenderer']['content']['sectionListRenderer'];
-    continuation =
+    Map contentsMap = responseMap['contents']
+            ['singleColumnBrowseResultsRenderer']['tabs'][0]['tabRenderer']
+        ['content']['sectionListRenderer'];
+    String continuation =
         contentsMap['continuations'][0]['nextContinuationData']['continuation'];
 
     List<Map<String, Object>> data = parseHomePageResponseData(contentsMap);
     List<Map<String, Object>> parsedData = [];
     parsedData.addAll(data);
 
-    while ((data = await getContinuationData()).isNotEmpty) {
+    while ((data =
+            await getContinuationData(continuation, tracking, visitorData))
+        .isNotEmpty) {
       parsedData.addAll(data);
     }
 
@@ -733,7 +728,7 @@ class YoutubeMusicApi {
             .last['url']
             .replaceAllMapped(
                 RegExp(r'w[0-9]{3,4}-h[0-9]{3,4}'), (match) => 'w900-h900')
-            .replaceAll('maxresdefault', 'hqdefault'),
+            .replaceAll('hqdefault', 'maxresdefault'),
       ),
       extras: {
         'playlistId': playlistId,

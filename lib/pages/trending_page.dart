@@ -90,57 +90,35 @@ class _TrendingPageState extends State<TrendingPage> {
                             itemCount: trendingMap[index]['items'].length,
                             scrollDirection: Axis.horizontal,
                             gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 2,
-                              childAspectRatio: 1.1,
-                            ),
-                            itemBuilder: (context, internalIndex) => InkWell(
-                              onTap: () {
-                                if (trendingMap[index]['items'][internalIndex]
-                                        .runtimeType ==
-                                    TrendingArtist) {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => ArtistsPage(
-                                        imageUrl: trendingMap[index]['items']
-                                                [internalIndex]
-                                            .thumbnail,
-                                        title: trendingMap[index]['items']
-                                                [internalIndex]
-                                            .title,
-                                        artistId: trendingMap[index]['items']
-                                                [internalIndex]
-                                            .browseId,
-                                      ),
-                                    ),
-                                  );
-                                } else {
-                                  PlayerManager.playMusic(
-                                    trendingMap[index]['items'][internalIndex]
-                                        .videoId,
-                                    trendingMap[index]['items'][internalIndex]
-                                        .playlistId,
-                                    'Trending',
-                                  );
-                                }
-                              },
-                              child: SongAndArtistItem(
-                                title: trendingMap[index]['items']
-                                        [internalIndex]
-                                    .title,
-                                subtitle: trendingMap[index]['items']
-                                        [internalIndex]
-                                    .subtitle,
-                                thumbnail: trendingMap[index]['items']
-                                        [internalIndex]
-                                    .thumbnail,
-                                width: PlayerManager.size.width * 0.3,
-                                artist: trendingMap[index]['items']
-                                            [internalIndex]
-                                        .runtimeType ==
-                                    TrendingArtist,
+                              childAspectRatio: double.parse(
+                                (PlayerManager.size.height *
+                                        0.7 /
+                                        PlayerManager.size.width)
+                                    .toStringAsFixed(2),
                               ),
+                            ),
+                            itemBuilder: (context, internalIndex) =>
+                                SongAndArtistItem(
+                              title: trendingMap[index]['items'][internalIndex]
+                                  .title,
+                              subtitle: trendingMap[index]['items']
+                                      [internalIndex]
+                                  .subtitle,
+                              browseId: trendingMap[index]['items']
+                                      [internalIndex]
+                                  .browseId,
+                              playlistId: trendingMap[index]['items']
+                                      [internalIndex]
+                                  .playlistId,
+                              thumbnail: trendingMap[index]['items']
+                                      [internalIndex]
+                                  .thumbnail,
+                              width: PlayerManager.size.width * 0.3,
+                              artist: trendingMap[index]['items'][internalIndex]
+                                      .runtimeType ==
+                                  TrendingArtist,
                             ),
                           ),
                         ),
