@@ -31,7 +31,7 @@ class _ArtistsPageState extends State<ArtistsPage> {
         actions: [IconButton(onPressed: () {}, icon: const Icon(Icons.launch))],
       ),
       body: FutureBuilder(
-        future: YoutubeMusicApi.getArtist(widget.artistId),
+        future: YtmApi.getArtist(widget.artistId),
         builder: (context, AsyncSnapshot snapshot) {
           if (snapshot.hasData) {
             Artist artist = snapshot.data;

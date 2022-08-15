@@ -318,7 +318,7 @@ class YoutubeStreamSource extends StreamAudioSource {
 
   @override
   Future<StreamAudioResponse> request([int? start, int? end]) async {
-    Stream<List<int>> stream = await YoutubeMusicApi.getSongStream(musicId);
+    Stream<List<int>> stream = await YtmApi.getSongStream(musicId);
     return StreamAudioResponse(
       sourceLength: null,
       contentLength: null,

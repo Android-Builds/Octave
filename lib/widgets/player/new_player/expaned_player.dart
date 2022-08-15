@@ -299,7 +299,7 @@ class ExpandedPlayer extends StatelessWidget {
           clipBehavior: Clip.none,
           children: [
             FutureBuilder(
-              future: YoutubeMusicApi.getLyrics(
+              future: YtmApi.getLyrics(
                 mediaItem.extras!['playlistId'],
                 mediaItem.id,
               ),

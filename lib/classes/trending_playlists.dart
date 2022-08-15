@@ -1,4 +1,4 @@
-import 'package:beats/api/youtube_api.dart';
+import 'package:beats/utils/utility.dart';
 
 class TrendingPlaylists {
   final String thumbnail;
@@ -20,10 +20,8 @@ class TrendingPlaylists {
             .replaceAllMapped(
                 RegExp(r'w[0-9]{3,4}-h[0-9]{3,4}'), (match) => 'w300-h300')
             .replaceAll('hqdefault', 'maxresdefault'),
-        title =
-            YoutubeMusicApi.mapToText(json['musicTwoRowItemRenderer']['title']),
-        subtitle = YoutubeMusicApi.mapToText(
-            json['musicTwoRowItemRenderer']['subtitle']),
+        title = mapToText(json['musicTwoRowItemRenderer']['title']),
+        subtitle = mapToText(json['musicTwoRowItemRenderer']['subtitle']),
         playlistId = json['musicTwoRowItemRenderer']['navigationEndpoint']
                 ['browseEndpoint']?['browseId'] ??
             json['musicTwoRowItemRenderer']['navigationEndpoint']

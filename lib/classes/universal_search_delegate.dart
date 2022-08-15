@@ -164,7 +164,7 @@ class UniversalSearchDelegate extends SearchDelegate<String> {
     return query.isEmpty
         ? const SizedBox.shrink()
         : FutureBuilder(
-            future: YoutubeMusicApi.getSearchSuggestions(query),
+            future: YtmApi.getSearchSuggestions(query),
             builder: (context, AsyncSnapshot snapshot) {
               if (snapshot.hasData) {
                 List<List<dynamic>> suggestions = snapshot.data;

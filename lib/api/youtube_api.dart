@@ -7,6 +7,7 @@ import 'package:beats/classes/playlist.dart';
 import 'package:beats/classes/search_result.dart';
 import 'package:beats/classes/trending_artists.dart';
 import 'package:beats/classes/trending_playlists.dart';
+import 'package:beats/utils/utility.dart';
 import 'package:http/http.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
@@ -26,6 +27,12 @@ enum SearchType {
 }
 
 class YoutubeMusicApi {
+  static late Map responseMap;
+  static late String tracking;
+  static late Map contentsMap;
+  static late String continuation;
+  static String visitorData = '';
+
   static final Map _body = {
     'context': {
       'capabilities': {},
@@ -37,7 +44,7 @@ class YoutubeMusicApi {
     'browseId': '',
   };
 
-  static final Map context = {
+  static final Map _context = {
     'capabilities': {},
     'client': {
       'clientName': 'WEB_REMIX',
@@ -46,15 +53,6 @@ class YoutubeMusicApi {
   };
 
   static final YoutubeExplode _youtubeExplode = YoutubeExplode();
-
-  static String mapToText(Map textMap) {
-    List textList = textMap['runs'];
-    if (textList.first['text'] == 'Playlist') {
-      textList = textList.sublist(2);
-    }
-    return textList.map((e) => e['text']).toList().join();
-  }
-
   /*
    * Playlist Section 
    */
@@ -125,14 +123,6 @@ class YoutubeMusicApi {
     return stream;
   }
 
-  static Future getChannelDetails(String channelId) async {
-    getArtist(channelId);
-    ChannelAbout about = await _youtubeExplode.channels.getAboutPage(channelId);
-    Channel channel = await _youtubeExplode.channels.get(channelId);
-    Stream<Video> vids = _youtubeExplode.channels.getUploads(channelId);
-    return [channel, about, vids];
-  }
-
   static List<Map<String, Object>> parseHomePageResponseData(Map contentsMap) {
     List<TrendingPlaylists> trendingPlaylists = [];
     List<TrendingSong> trendingSongs = [];
@@ -187,11 +177,7 @@ class YoutubeMusicApi {
     return jsonDecode(response.body);
   }
 
-  static Future<List<Map<String, Object>>> getContinuationData(
-    String continuation,
-    String tracking,
-    String visitorData,
-  ) async {
+  static Future<List<Map<String, Object>>> getContinuationData() async {
     Uri nextLink = Uri.https('music.youtube.com', 'youtubei/v1/browse', {
       'ctoken': continuation,
       'continuation': continuation,
@@ -224,34 +210,29 @@ class YoutubeMusicApi {
     return parsedData;
   }
 
-  static Future getHomePage() async {
-    String visitorData = '';
-
+  static Future<List<Map<String, Object>>> getHomePage() async {
     final Uri link = Uri.https('music.youtube.com', '/youtubei/v1/browse', {
       'key': 'AIzaSyC9XL3ZjWddXya6X74dJoCTL-WEYFDNX30',
       'prettyPrint': 'false',
     });
 
     _body['browseId'] = 'FEmusic_home';
-    Map responseMap = await getResponse(link, _body);
-    String tracking = responseMap['trackingParams'];
+    responseMap = await getResponse(link, _body);
+    tracking = responseMap['trackingParams'];
     if ((responseMap['responseContext'] as Map).containsKey('visitorData')) {
       visitorData = responseMap['responseContext']['visitorData'];
-      context['client']['visitorData'] = visitorData;
+      _context['client']['visitorData'] = visitorData;
     }
-    Map contentsMap = responseMap['contents']
-            ['singleColumnBrowseResultsRenderer']['tabs'][0]['tabRenderer']
-        ['content']['sectionListRenderer'];
-    String continuation =
+    contentsMap = responseMap['contents']['singleColumnBrowseResultsRenderer']
+        ['tabs'][0]['tabRenderer']['content']['sectionListRenderer'];
+    continuation =
         contentsMap['continuations'][0]['nextContinuationData']['continuation'];
 
     List<Map<String, Object>> data = parseHomePageResponseData(contentsMap);
     List<Map<String, Object>> parsedData = [];
     parsedData.addAll(data);
 
-    while ((data =
-            await getContinuationData(continuation, tracking, visitorData))
-        .isNotEmpty) {
+    while ((data = await getContinuationData()).isNotEmpty) {
       parsedData.addAll(data);
     }
 
@@ -401,7 +382,7 @@ class YoutubeMusicApi {
     });
 
     Map body = {
-      'context': context,
+      'context': _context,
       'input': searchQuery,
     };
 
@@ -497,7 +478,7 @@ class YoutubeMusicApi {
     }
   }
 
-  static Future getSearchResults(String searchQuery,
+  static Future<List<dynamic>> getSearchResults(String searchQuery,
       [SearchType? searchType]) async {
     Uri searchLink = Uri.https('music.youtube.com', '/youtubei/v1/search', {
       'key': 'AIzaSyC9XL3ZjWddXya6X74dJoCTL-WEYFDNX30',
@@ -505,7 +486,7 @@ class YoutubeMusicApi {
     });
 
     Map body = {
-      'context': context,
+      'context': _context,
       'query': searchQuery,
     };
 
@@ -565,7 +546,7 @@ class YoutubeMusicApi {
     });
 
     Map body = {
-      'context': context,
+      'context': _context,
       'browseId': browseId,
     };
 
@@ -702,7 +683,7 @@ class YoutubeMusicApi {
     String playlistName,
   ) async {
     var body = {
-      'context': context,
+      'context': _context,
       'playlistId': playlistId,
       'videoId': musicId,
     };
@@ -803,7 +784,7 @@ class YoutubeMusicApi {
      * watchEndpointMusicSupportedConfigs: {watchEndpointMusicConfig: {musicVideoType: "MUSIC_VIDEO_TYPE_UGC"}}
      */
     var body = {
-      'context': context,
+      'context': _context,
       'playlistId': playlistId,
       'videoId': musicId,
       'isAudioOnly': true,
@@ -869,4 +850,60 @@ class YoutubeMusicApi {
 
     return 1;
   }
+}
+
+/*
+ * Java like Interface implementation, declutters the original 
+ * class mess with some added benifits of a interface.
+ */
+
+class YtmApi {
+  /// HomePage and Discovery
+  static Future<List<Map<String, Object>>> getHomePage() =>
+      YoutubeMusicApi.getHomePage();
+
+  static Future<List<dynamic>> getMoodsAndGenres() =>
+      YoutubeMusicApi.getMoodsAndGenres();
+
+  static Future<List<dynamic>> getPlaylistFromMoodOrGenre(
+          String browseId, String params) =>
+      YoutubeMusicApi.getPlaylistFromMoodOrGenre(browseId, params);
+
+  /// Trending
+  static Future<List<Map<dynamic, dynamic>>> getTrending(String countryCode) =>
+      YoutubeMusicApi.getTrending(countryCode);
+
+  static Future<List<Map<dynamic, dynamic>>> getTrendingCountries() =>
+      YoutubeMusicApi.getTrendingCountries();
+
+  /// Searh methods
+  static Future<List<dynamic>> getSearchResults(String searchQuery,
+          [SearchType? searchType]) =>
+      YoutubeMusicApi.getSearchResults(searchQuery);
+
+  static Future getSearchSuggestions(String searchQuery) =>
+      YoutubeMusicApi.getSearchSuggestions(searchQuery);
+
+  /// Song play related methods
+  static Future getArtist(String browseId) =>
+      YoutubeMusicApi.getArtist(browseId);
+
+  static Future<MediaItem> getPlayerDetails(
+    String playlistId,
+    String musicId,
+    String playlistName,
+  ) =>
+      YoutubeMusicApi.getPlayerDetails(playlistId, musicId, playlistName);
+
+  static Future<Stream<List<int>>> getSongStream(String musicId) =>
+      YoutubeMusicApi.getSongStream(musicId);
+
+  static Future<List<MediaItem>> getQueue(String playlistId) =>
+      YoutubeMusicApi.getQueue(playlistId);
+
+  static Future<SongPlayList> getPlaylist(String playlistId) =>
+      YoutubeMusicApi.getPlaylist(playlistId);
+
+  static Future<String> getLyrics(String playlistId, String musicId) =>
+      YoutubeMusicApi.getLyrics(playlistId, musicId);
 }

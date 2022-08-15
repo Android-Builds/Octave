@@ -24,7 +24,7 @@ class _TrendingPageState extends State<TrendingPage> {
         SizedBox(
           height: PlayerManager.size.height * 0.08,
           child: FutureBuilder(
-            future: YoutubeMusicApi.getTrendingCountries(),
+            future: YtmApi.getTrendingCountries(),
             builder: (context, AsyncSnapshot snapshot) {
               if (snapshot.hasData) {
                 List<Map<dynamic, dynamic>> countryCodes = snapshot.data;
@@ -58,7 +58,7 @@ class _TrendingPageState extends State<TrendingPage> {
           ),
         ),
         FutureBuilder(
-          future: YoutubeMusicApi.getTrending(selectedCode),
+          future: YtmApi.getTrending(selectedCode),
           builder: (context, AsyncSnapshot snapshot) {
             if (snapshot.hasData) {
               List<Map<dynamic, dynamic>> trendingMap = snapshot.data;
@@ -86,41 +86,50 @@ class _TrendingPageState extends State<TrendingPage> {
                               notification.metrics.axisDirection !=
                               AxisDirection.down,
                           child: GridView.builder(
-                            shrinkWrap: true,
-                            itemCount: trendingMap[index]['items'].length,
-                            scrollDirection: Axis.horizontal,
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              childAspectRatio: double.parse(
-                                (PlayerManager.size.height *
-                                        0.7 /
-                                        PlayerManager.size.width)
-                                    .toStringAsFixed(2),
+                              shrinkWrap: true,
+                              itemCount: trendingMap[index]['items'].length,
+                              scrollDirection: Axis.horizontal,
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                childAspectRatio: double.parse(
+                                  (PlayerManager.size.height *
+                                          0.7 /
+                                          PlayerManager.size.width)
+                                      .toStringAsFixed(2),
+                                ),
                               ),
-                            ),
-                            itemBuilder: (context, internalIndex) =>
-                                SongAndArtistItem(
-                              title: trendingMap[index]['items'][internalIndex]
-                                  .title,
-                              subtitle: trendingMap[index]['items']
-                                      [internalIndex]
-                                  .subtitle,
-                              browseId: trendingMap[index]['items']
-                                      [internalIndex]
-                                  .browseId,
-                              playlistId: trendingMap[index]['items']
-                                      [internalIndex]
-                                  .playlistId,
-                              thumbnail: trendingMap[index]['items']
-                                      [internalIndex]
-                                  .thumbnail,
-                              width: PlayerManager.size.width * 0.3,
-                              artist: trendingMap[index]['items'][internalIndex]
-                                      .runtimeType ==
-                                  TrendingArtist,
-                            ),
-                          ),
+                              itemBuilder: (context, internalIndex) {
+                                bool artist = trendingMap[index]['items']
+                                            [internalIndex]
+                                        .runtimeType ==
+                                    TrendingArtist;
+                                return SongAndArtistItem(
+                                  title: trendingMap[index]['items']
+                                          [internalIndex]
+                                      .title,
+                                  subtitle: trendingMap[index]['items']
+                                          [internalIndex]
+                                      .subtitle,
+                                  browseId: artist
+                                      ? trendingMap[index]['items']
+                                              [internalIndex]
+                                          .browseId
+                                      : trendingMap[index]['items']
+                                              [internalIndex]
+                                          .videoId,
+                                  playlistId: artist
+                                      ? ''
+                                      : trendingMap[index]['items']
+                                              [internalIndex]
+                                          .playlistId,
+                                  thumbnail: trendingMap[index]['items']
+                                          [internalIndex]
+                                      .thumbnail,
+                                  width: PlayerManager.size.width * 0.3,
+                                  artist: artist,
+                                );
+                              }),
                         ),
                       ),
                     ],

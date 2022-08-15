@@ -1,4 +1,4 @@
-import '../api/youtube_api.dart';
+import 'package:beats/utils/utility.dart';
 
 class TrendingArtist {
   final String browseId;
@@ -17,12 +17,11 @@ class TrendingArtist {
             .replaceAllMapped(
                 RegExp(r'w[0-9]{3,4}-h[0-9]{3,4}'), (match) => 'w300-h300')
             .replaceAll('hqdefault', 'maxresdefault'),
-        title = YoutubeMusicApi.mapToText(
-            json['musicResponsiveListItemRenderer']['flexColumns'][0]
-                ['musicResponsiveListItemFlexColumnRenderer']['text']),
-        subtitle = YoutubeMusicApi.mapToText(
-            json['musicResponsiveListItemRenderer']['flexColumns'][1]
-                ['musicResponsiveListItemFlexColumnRenderer']['text']);
+        title = mapToText(json['musicResponsiveListItemRenderer']['flexColumns']
+            [0]['musicResponsiveListItemFlexColumnRenderer']['text']),
+        subtitle = mapToText(json['musicResponsiveListItemRenderer']
+                ['flexColumns'][1]['musicResponsiveListItemFlexColumnRenderer']
+            ['text']);
 
   static List<TrendingArtist> getTrendingArtistsList(
       List<dynamic> contentsMap) {

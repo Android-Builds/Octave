@@ -12,7 +12,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     on<GetSearchResults>((event, emit) async {
       emit(SearchLoading());
       List searchResults =
-          await YoutubeMusicApi.getSearchResults(event.query, event.searchType);
+          await YtmApi.getSearchResults(event.query, event.searchType);
       emit(SearchLoaded(searchResults, individual: event.searchType == null));
     });
   }

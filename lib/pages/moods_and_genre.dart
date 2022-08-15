@@ -23,7 +23,7 @@ class _MoodsAndGenresState extends State<MoodsAndGenres> {
         title: Text(widget.moodsAndGenreMap['title']),
       ),
       body: FutureBuilder(
-        future: YoutubeMusicApi.getPlaylistFromMoodOrGenre(
+        future: YtmApi.getPlaylistFromMoodOrGenre(
           widget.moodsAndGenreMap['browseId'],
           widget.moodsAndGenreMap['params'],
         ),

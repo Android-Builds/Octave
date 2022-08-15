@@ -1,7 +1,6 @@
 // ignore_for_file: depend_on_referenced_packages
 
 import 'package:beats/api/youtube_api.dart';
-import 'package:beats/classes/search_result.dart';
 import 'package:collection/collection.dart';
 
 class SpotifySong {
@@ -16,8 +15,8 @@ class SpotifySong {
 
   Future<String> spotifyToYoutube(String title, String artists) async {
     String id = '';
-    List<SearchResult> youtubeSongs =
-        await YoutubeMusicApi.getSearchResults(title, SearchType.songs);
+    List<dynamic> youtubeSongs =
+        await YtmApi.getSearchResults(title, SearchType.songs);
     for (var element in youtubeSongs) {
       if (const ListEquality().equals(
           artists.split(','),

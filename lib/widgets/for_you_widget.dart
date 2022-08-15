@@ -25,10 +25,10 @@ class ForYouWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: YoutubeMusicApi.getHomePage(),
-      builder: (context, snapshot) {
+      future: YtmApi.getHomePage(),
+      builder: (context, AsyncSnapshot snapshot) {
         if (snapshot.hasData) {
-          List data = snapshot.data as List;
+          List data = snapshot.data;
           return ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),

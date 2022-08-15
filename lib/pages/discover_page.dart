@@ -15,7 +15,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: YoutubeMusicApi.getMoodsAndGenres(),
+      future: YtmApi.getMoodsAndGenres(),
       builder: (context, AsyncSnapshot snapshot) {
         if (snapshot.hasData) {
           List<dynamic> moodsAndGenres = snapshot.data;

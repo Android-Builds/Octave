@@ -35,7 +35,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
     return SafeArea(
       child: Scaffold(
         body: FutureBuilder(
-          future: YoutubeMusicApi.getPlaylist(widget.playlistId),
+          future: YtmApi.getPlaylist(widget.playlistId),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.hasData) {
               SongPlayList playlist = snapshot.data;

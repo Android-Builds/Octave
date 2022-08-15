@@ -104,9 +104,9 @@ class PlayerManager {
         _audioHandler.mediaItem.value!.id == musicId) {
       _miniplayerController.animateToHeight(state: mp.PanelState.MAX);
     } else {
-      MediaItem song = await YoutubeMusicApi.getPlayerDetails(
-          playlistId, musicId, playlistName);
-      List<MediaItem> items = await YoutubeMusicApi.getQueue(playlistId);
+      MediaItem song =
+          await YtmApi.getPlayerDetails(playlistId, musicId, playlistName);
+      List<MediaItem> items = await YtmApi.getQueue(playlistId);
       items.insert(0, song);
       await addToPlaylistAndPlay(items);
       //panelController.open();
