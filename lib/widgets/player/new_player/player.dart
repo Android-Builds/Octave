@@ -34,7 +34,9 @@ class _PlayerState extends State<Player> {
             valueNotifier: PlayerManager.playerExpandProgress,
             minHeight: Constants.minHeight,
             maxHeight: Constants.maxHeight,
-            onDismiss: () {
+            curve: Curves.easeOut,
+            isActive: playbackState.playing,
+            onDismissed: () {
               PlayerManager.audioHandler.stop();
             },
             builder: (height, percentage) {

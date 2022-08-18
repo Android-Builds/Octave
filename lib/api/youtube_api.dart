@@ -7,6 +7,7 @@ import 'package:beats/classes/playlist.dart';
 import 'package:beats/classes/search_result.dart';
 import 'package:beats/classes/trending_artists.dart';
 import 'package:beats/classes/trending_playlists.dart';
+import 'package:beats/utils/player_manager.dart';
 import 'package:beats/utils/utility.dart';
 import 'package:http/http.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
@@ -71,9 +72,29 @@ class YoutubeMusicApi {
     String subtitle =
         '${mapToText(responseMap['header']['musicDetailHeaderRenderer']['subtitle'])}\n${mapToText(responseMap['header']['musicDetailHeaderRenderer']['secondSubtitle'])}';
 
-    List contents = responseMap['contents']['singleColumnBrowseResultsRenderer']
-            ['tabs'][0]['tabRenderer']['content']['sectionListRenderer']
-        ['contents'][0]['musicPlaylistShelfRenderer']['contents'];
+    responseMap = responseMap['contents']['singleColumnBrowseResultsRenderer']
+        ['tabs'][0]['tabRenderer']['content']['sectionListRenderer'];
+
+    List contents =
+        responseMap['contents'][0]['musicPlaylistShelfRenderer']['contents'];
+
+    if (responseMap.containsKey('continuations')) {
+      continuation = responseMap['continuations'][0]['nextContinuationData']
+          ['continuation'];
+
+      tracking = responseMap['continuations'][0]['nextContinuationData']
+          ['clickTrackingParams'];
+
+      Map continousMap = {};
+
+      while ((continousMap = await getContinuationData(false))
+          .containsKey('continuations')) {
+        contents.addAll(continousMap['contents']);
+        continuation = contentsMap['continuations'][0]['nextContinuationData']
+            ['continuation'];
+        tracking = contentsMap['continuations']['trackingParams'];
+      }
+    }
 
     List<MediaItem> items = [];
 
@@ -82,27 +103,32 @@ class YoutubeMusicApi {
       List<String> durationText = mapToText(content['fixedColumns'][0]
               ['musicResponsiveListItemFixedColumnRenderer']['text'])
           .split(':');
-      items.add(
-        MediaItem(
-          id: content['playlistItemData']['videoId'],
-          title: mapToText(content['flexColumns'][0]
-              ['musicResponsiveListItemFlexColumnRenderer']['text']),
-          artist: mapToText(content['flexColumns'][1]
-              ['musicResponsiveListItemFlexColumnRenderer']['text']),
-          duration: Duration(
-            minutes: int.parse(durationText[0]),
-            seconds: int.parse(durationText[1]),
+
+      if (content['playlistItemData'] == null) {
+        continue;
+      } else {
+        items.add(
+          MediaItem(
+            id: content['playlistItemData']['videoId'],
+            title: mapToText(content['flexColumns'][0]
+                ['musicResponsiveListItemFlexColumnRenderer']['text']),
+            artist: mapToText(content['flexColumns'][1]
+                ['musicResponsiveListItemFlexColumnRenderer']['text']),
+            duration: Duration(
+              minutes: int.parse(durationText[0]),
+              seconds: int.parse(durationText[1]),
+            ),
+            artUri: Uri.parse(content['thumbnail']['musicThumbnailRenderer']
+                    ['thumbnail']['thumbnails']
+                .last['url']),
+            album: title,
+            extras: {
+              'playlistId': playlistId.replaceAll('VL', ''),
+              'playlist': title,
+            },
           ),
-          artUri: Uri.parse(content['thumbnail']['musicThumbnailRenderer']
-                  ['thumbnail']['thumbnails']
-              .last['url']),
-          album: title,
-          extras: {
-            'playlistId': playlistId.replaceAll('VL', ''),
-            'playlist': title,
-          },
-        ),
-      );
+        );
+      }
     }
     return SongPlayList(title, subtitle, thumbnail, items);
   }
@@ -177,7 +203,7 @@ class YoutubeMusicApi {
     return jsonDecode(response.body);
   }
 
-  static Future<List<Map<String, Object>>> getContinuationData() async {
+  static Future<dynamic> getContinuationData([bool homepage = true]) async {
     Uri nextLink = Uri.https('music.youtube.com', 'youtubei/v1/browse', {
       'ctoken': continuation,
       'continuation': continuation,
@@ -194,20 +220,25 @@ class YoutubeMusicApi {
     List<Map<String, Object>> parsedData = [];
 
     Map responseMap = await getResponse(nextLink, _body);
-    if (responseMap['continuationContents'] != null &&
-        (responseMap['continuationContents'] as Map)
-            .containsKey('sectionListContinuation')) {
-      Map contentsMap =
-          responseMap['continuationContents']['sectionListContinuation'];
-      tracking = contentsMap['trackingParams'];
-      if (contentsMap.containsKey('continuations')) {
-        continuation = contentsMap['continuations'][0]['nextContinuationData']
-            ['continuation'];
-        parsedData.addAll(parseHomePageResponseData(contentsMap));
+    if (responseMap['continuationContents'] != null) {
+      if (!homepage &&
+          (responseMap['continuationContents'] as Map)
+              .containsKey('musicPlaylistShelfContinuation')) {
+        return responseMap['continuationContents']
+            ['musicPlaylistShelfContinuation'];
+      } else {
+        Map contentsMap =
+            responseMap['continuationContents']['sectionListContinuation'];
+        tracking = contentsMap['trackingParams'];
+        if (contentsMap.containsKey('continuations')) {
+          continuation = contentsMap['continuations'][0]['nextContinuationData']
+              ['continuation'];
+          parsedData.addAll(parseHomePageResponseData(contentsMap));
+        }
       }
     }
 
-    return parsedData;
+    return homepage ? parsedData : {};
   }
 
   static Future<List<Map<String, Object>>> getHomePage() async {
@@ -388,6 +419,8 @@ class YoutubeMusicApi {
 
     Map responseMap = await getResponse(searchSuggestionLink, body);
 
+    if (!responseMap.containsKey('contents')) return [];
+
     List contents = responseMap['contents'][0]
         ['searchSuggestionsSectionRenderer']['contents'];
 
@@ -538,6 +571,62 @@ class YoutubeMusicApi {
     return searchResults;
   }
 
+  static Future getSearchResultFromLink(
+      String url, SearchType searchType) async {
+    String title = '';
+    String subtitle = '';
+    String thumbnail = '';
+    String browseId = '';
+
+    Map responseMap = await resolveUrl(url);
+
+    //log(responseMap.toString());
+    if (searchType == SearchType.songs) {
+      browseId = responseMap['endpoint']['watchEndpoint']['videoId'];
+      responseMap = await requestPlayerData(browseId);
+      log(responseMap['videoDetails'].keys.toString());
+      title = responseMap['videoDetails']['title'];
+      subtitle = '${responseMap['videoDetails']['author']} '
+          '${PlayerManager.parsedDuration(Duration(seconds: int.parse(responseMap['videoDetails']['lengthSeconds'])))}';
+      thumbnail =
+          responseMap['videoDetails']['thumbnail']['thumbnails'].last['url'];
+    } else {
+      browseId = responseMap['endpoint']['browseEndpoint']['browseId'];
+      responseMap = await browse(browseId);
+      //log(responseMap.toString());
+      if (searchType == SearchType.playlists) {
+        title = mapToText(
+            responseMap['header']['musicDetailHeaderRenderer']['title']);
+        thumbnail = responseMap['header']['musicDetailHeaderRenderer']
+                    ['thumbnail']['croppedSquareThumbnailRenderer']['thumbnail']
+                ['thumbnails']
+            .last['url'];
+        subtitle =
+            '${mapToText(responseMap['header']['musicDetailHeaderRenderer']['subtitle'])}\n'
+            '${mapToText(responseMap['header']['musicDetailHeaderRenderer']['secondSubtitle'])}';
+      } else {
+        responseMap = responseMap['header']['musicImmersiveHeaderRenderer'];
+        title = mapToText(responseMap['title']);
+        subtitle = 'Artist \u2022 '
+            '${mapToText(responseMap['subscriptionButton']['subscribeButtonRenderer']['subscriberCountText'])}'
+            ' Subscribers';
+        thumbnail = responseMap['thumbnail']['musicThumbnailRenderer']
+                ['thumbnail']['thumbnails']
+            .first['url']
+            .replaceAllMapped(
+                RegExp(r'w[0-9]{3,4}-h[0-9]{3,4}'), (match) => 'w300-h300');
+      }
+    }
+
+    return {
+      'title': title,
+      'subtitle': subtitle,
+      'browseId': browseId,
+      'thumbnail': thumbnail,
+      'searchType': searchType,
+    };
+  }
+
   static Future<Map<dynamic, dynamic>> browse(String browseId,
       [Map? extraParams]) async {
     Uri browseLink = Uri.https('music.youtube.com', '/youtubei/v1/browse', {
@@ -677,6 +766,23 @@ class YoutubeMusicApi {
     return songs;
   }
 
+  static Future<Map<dynamic, dynamic>> requestPlayerData(
+    String musicId,
+  ) async {
+    var body = {
+      'context': _context,
+      'videoId': musicId,
+    };
+
+    final Uri link = Uri.https('music.youtube.com', '/youtubei/v1/player', {
+      'alt': 'json',
+      'key': 'AIzaSyC9XL3ZjWddXya6X74dJoCTL-WEYFDNX30',
+      'prettyPrint': 'false',
+    });
+
+    return (await getResponse(link, body));
+  }
+
   static Future<MediaItem> getPlayerDetails(
     String playlistId,
     String musicId,
@@ -684,9 +790,12 @@ class YoutubeMusicApi {
   ) async {
     var body = {
       'context': _context,
-      'playlistId': playlistId,
       'videoId': musicId,
     };
+
+    if (playlistId.isNotEmpty) {
+      body['playlistId'] = playlistId;
+    }
 
     final Uri link = Uri.https('music.youtube.com', '/youtubei/v1/player', {
       'alt': 'json',
@@ -818,14 +927,8 @@ class YoutubeMusicApi {
   }
 
   static Future resolveUrl(String url) async {
-    var body = {
-      'context': {
-        'capabilities': {},
-        'client': {
-          'clientName': 'WEB_REMIX',
-          'clientVersion': '1.20220613.01.00',
-        },
-      },
+    Map body = {
+      'context': _context,
       'url': url,
     };
 
@@ -836,19 +939,19 @@ class YoutubeMusicApi {
       'prettyPrint': 'false',
     });
 
-    final Response response = await post(
-      link,
-      headers: {
-        'user-agent':
-            'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
-        'origin': 'https://music.youtube.com',
-      },
-      body: json.encode(body),
-    );
+    Map responseMap = await getResponse(link, body);
 
-    log(response.body);
+    // final Response response = await post(
+    //   link,
+    //   headers: {
+    //     'user-agent':
+    //         'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
+    //     'origin': 'https://music.youtube.com',
+    //   },
+    //   body: json.encode(body),
+    // );
 
-    return 1;
+    return responseMap;
   }
 }
 
@@ -858,6 +961,10 @@ class YoutubeMusicApi {
  */
 
 class YtmApi {
+  /// Browse
+  static Future<Map<dynamic, dynamic>> browse(String browseId) =>
+      YoutubeMusicApi.browse(browseId);
+
   /// HomePage and Discovery
   static Future<List<Map<String, Object>>> getHomePage() =>
       YoutubeMusicApi.getHomePage();
@@ -883,6 +990,9 @@ class YtmApi {
 
   static Future getSearchSuggestions(String searchQuery) =>
       YoutubeMusicApi.getSearchSuggestions(searchQuery);
+
+  static Future getSearchResultFromLink(String id, SearchType searchType) =>
+      YoutubeMusicApi.getSearchResultFromLink(id, searchType);
 
   /// Song play related methods
   static Future getArtist(String browseId) =>

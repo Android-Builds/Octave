@@ -53,7 +53,7 @@ class _DashboardState extends State<Dashboard> {
               value: height,
             );
 
-            var opacity = 1 - value;
+            var opacity = (1 - value).ceilToDouble();
             if (opacity < 0) opacity = 0;
             if (opacity > 1) opacity = 1;
 

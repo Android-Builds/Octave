@@ -5,11 +5,12 @@ import 'package:beats/api/youtube_api.dart';
 import 'package:flutter/material.dart';
 import 'package:miniplayer/miniplayer.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-import 'package:miniplayer/miniplayer.dart' as mp;
 
 import '../widgets/player/common.dart';
 import '../services/audio_service.dart';
 import 'package:rxdart/rxdart.dart';
+
+import 'package:miniplayer/miniplayer.dart' as mp;
 
 class PlayerManager {
   static late Size size;
@@ -106,7 +107,10 @@ class PlayerManager {
     } else {
       MediaItem song =
           await YtmApi.getPlayerDetails(playlistId, musicId, playlistName);
-      List<MediaItem> items = await YtmApi.getQueue(playlistId);
+      List<MediaItem> items = [];
+      if (playlistId.isNotEmpty) {
+        items = await YtmApi.getQueue(playlistId);
+      }
       items.insert(0, song);
       await addToPlaylistAndPlay(items);
       //panelController.open();
@@ -117,9 +121,58 @@ class PlayerManager {
       [int? index]) async {
     await _audioHandler.updateQueue(items);
     await _audioHandler.skipToQueueItem(index ?? 0);
-    await _audioHandler.play().then(
-          (value) =>
-              _miniplayerController.animateToHeight(state: mp.PanelState.MAX),
-        );
+    await _audioHandler.play();
+    _miniplayerController.animateToHeight(state: mp.PanelState.MAX);
+  }
+
+  static String parsedDuration(Duration duration) {
+    return RegExp(r'((^0*[1-9]\d*:)?\d{2}:\d{2})\.\d+$')
+            .firstMatch("$duration")
+            ?.group(1) ??
+        '$duration';
+  }
+
+  static Future getSearchSuggestions(String searchQuery) async {
+    if (searchQuery.contains('youtube')) {
+      RegExp typeExp = RegExp(r'.com\/\w*');
+      String type = typeExp
+          .allMatches(searchQuery)
+          .map((e) => e.group(0))
+          .toList()
+          .first!
+          .replaceAll('.com/', '');
+
+      SearchType searchType = SearchType.songs;
+
+      switch (type) {
+        case 'watch':
+          searchType = SearchType.songs;
+          break;
+        case 'playlist':
+          searchType = SearchType.playlists;
+          break;
+        case 'channel':
+          searchType = SearchType.artists;
+          break;
+        default:
+      }
+      return YtmApi.getSearchResultFromLink(searchQuery, searchType);
+
+      // switch (type) {
+      //   case 'playlist':
+      //     RegExp idExp = RegExp(r'list=\w*');
+      //     String id = idExp
+      //         .allMatches(searchQuery)
+      //         .map((e) => e.group(0))
+      //         .toList()
+      //         .first!
+      //         .replaceAll('list=', '');
+      //     print(id);
+      //     YoutubeMusicApi.resolveUrl(searchQuery);
+      //     return YtmApi.getSearchResultFromLink(id);
+      // }
+    } else {
+      return YtmApi.getSearchSuggestions(searchQuery);
+    }
   }
 }

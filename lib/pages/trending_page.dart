@@ -1,6 +1,5 @@
 import 'package:beats/api/youtube_api.dart';
 import 'package:beats/classes/trending_artists.dart';
-import 'package:beats/pages/artists_page.dart';
 import 'package:beats/widgets/song_and_artist_item.dart';
 import 'package:flutter/material.dart';
 

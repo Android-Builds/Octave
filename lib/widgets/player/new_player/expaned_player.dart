@@ -4,7 +4,6 @@ import 'package:beats/widgets/marquee_widget.dart';
 import 'package:beats/widgets/player/player_playlist.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:miniplayer/miniplayer.dart';
 
 import '../common.dart';
@@ -26,6 +25,11 @@ class ExpandedPlayer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FocusScopeNode currentFocus = FocusScope.of(context);
+    if (!currentFocus.hasPrimaryFocus) {
+      currentFocus.unfocus();
+    }
+
     var percentageExpandedPlayer = PlayerManager.percentageFromValueInRange(
       min: Constants.maxHeight * 0.2 + Constants.minHeight,
       max: Constants.maxHeight,
