@@ -2,6 +2,7 @@ import 'package:beats/api/youtube_api.dart';
 import 'package:beats/classes/playlist.dart';
 import 'package:beats/utils/player_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 import '../widgets/custom_delegate.dart';
@@ -49,18 +50,25 @@ class _PlaylistPageState extends State<PlaylistPage> {
                         imageUrl: widget.thumbnail,
                         leading: Row(
                           children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  playlist.title,
-                                  style: TextStyle(
-                                    fontSize: PlayerManager.size.width * 0.05,
-                                    fontWeight: FontWeight.bold,
+                            Flexible(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    playlist.title,
+                                    maxLines: 1,
+                                    style: TextStyle(
+                                      fontSize: PlayerManager.size.width * 0.05,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
-                                ),
-                                Text(playlist.subtitle)
-                              ],
+                                  Text(
+                                    playlist.subtitle,
+                                    maxLines: 1,
+                                  ),
+                                  Text(playlist.secondarySubtitle),
+                                ],
+                              ),
                             ),
                             TextButton(
                               style: ElevatedButton.styleFrom(
@@ -68,7 +76,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                                 padding: const EdgeInsets.all(20),
                               ),
                               onPressed: () {},
-                              child: const Icon(Icons.shuffle),
+                              child: const Icon(Ionicons.shuffle),
                             ),
                           ],
                         ),

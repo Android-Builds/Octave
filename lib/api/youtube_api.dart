@@ -60,23 +60,25 @@ class YoutubeMusicApi {
 
   static Future<SongPlayList> getPlaylist(String playlistId) async {
     Map<dynamic, dynamic> responseMap = await browse(playlistId);
-    String title = (responseMap['header']['musicDetailHeaderRenderer']['title']
-            ['runs'] as List)
-        .map((e) => e['text'])
-        .toList()
-        .join();
+    String title =
+        mapToText(responseMap['header']['musicDetailHeaderRenderer']['title']);
+
     String thumbnail = responseMap['header']['musicDetailHeaderRenderer']
                 ['thumbnail']['croppedSquareThumbnailRenderer']['thumbnail']
             ['thumbnails']
         .last['url'];
-    String subtitle =
-        '${mapToText(responseMap['header']['musicDetailHeaderRenderer']['subtitle'])}\n${mapToText(responseMap['header']['musicDetailHeaderRenderer']['secondSubtitle'])}';
+    String subtitle = mapToText(
+        responseMap['header']['musicDetailHeaderRenderer']['subtitle']);
+
+    String secondarySubtitle = mapToText(
+        responseMap['header']['musicDetailHeaderRenderer']['secondSubtitle']);
 
     responseMap = responseMap['contents']['singleColumnBrowseResultsRenderer']
         ['tabs'][0]['tabRenderer']['content']['sectionListRenderer'];
 
-    List contents =
-        responseMap['contents'][0]['musicPlaylistShelfRenderer']['contents'];
+    List contents = responseMap['contents'][0]['musicPlaylistShelfRenderer']
+            ?['contents'] ??
+        responseMap['contents'][0]['musicShelfRenderer']['contents'];
 
     if (responseMap.containsKey('continuations')) {
       continuation = responseMap['continuations'][0]['nextContinuationData']
@@ -118,9 +120,10 @@ class YoutubeMusicApi {
               minutes: int.parse(durationText[0]),
               seconds: int.parse(durationText[1]),
             ),
-            artUri: Uri.parse(content['thumbnail']['musicThumbnailRenderer']
-                    ['thumbnail']['thumbnails']
-                .last['url']),
+            artUri: Uri.parse(content['thumbnail']?['musicThumbnailRenderer']
+                        ['thumbnail']['thumbnails']
+                    .last['url'] ??
+                thumbnail),
             album: title,
             extras: {
               'playlistId': playlistId.replaceAll('VL', ''),
@@ -130,7 +133,7 @@ class YoutubeMusicApi {
         );
       }
     }
-    return SongPlayList(title, subtitle, thumbnail, items);
+    return SongPlayList(title, subtitle, secondarySubtitle, thumbnail, items);
   }
 
   /*
@@ -739,6 +742,12 @@ class YoutubeMusicApi {
 
     for (var song in songQueue) {
       song = song['content']['playlistPanelVideoRenderer'];
+      Iterable menuItems = (song['menu']['menuRenderer']['items'] as List)
+          .where((element) => element.containsKey('menuNavigationItemRenderer'))
+          .toList()
+          .where((element) =>
+              mapToText(element['menuNavigationItemRenderer']['text']) ==
+              'Go to album');
       List<String> time = song['lengthText']['runs'][0]['text'].split(':');
       songs.add(
         MediaItem(
@@ -759,6 +768,13 @@ class YoutubeMusicApi {
             seconds: int.parse(time[1]),
           ),
           artUri: Uri.parse(song['thumbnail']['thumbnails'].last['url']),
+          extras: {
+            'playlistId': playlistId,
+            'albumId': menuItems.isEmpty
+                ? ''
+                : menuItems.first['menuNavigationItemRenderer']
+                    ['navigationEndpoint']['browseEndpoint']['browseId'],
+          },
         ),
       );
     }
@@ -940,16 +956,6 @@ class YoutubeMusicApi {
     });
 
     Map responseMap = await getResponse(link, body);
-
-    // final Response response = await post(
-    //   link,
-    //   headers: {
-    //     'user-agent':
-    //         'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
-    //     'origin': 'https://music.youtube.com',
-    //   },
-    //   body: json.encode(body),
-    // );
 
     return responseMap;
   }

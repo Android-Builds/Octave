@@ -275,6 +275,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   @override
   Future<void> stop() async {
     await _player.stop();
+    await _playlist.clear();
     await playbackState.firstWhere(
         (state) => state.processingState == AudioProcessingState.idle);
   }

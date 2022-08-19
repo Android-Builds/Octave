@@ -37,6 +37,7 @@ class _PlayerState extends State<Player> {
             curve: Curves.easeOut,
             isActive: playbackState.playing,
             onDismissed: () {
+              PlayerManager.audioHandler.pause();
               PlayerManager.audioHandler.stop();
             },
             builder: (height, percentage) {

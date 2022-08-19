@@ -17,6 +17,9 @@ dependencies:
   sliding_up_panel: ^2.0.0+1
   ionicons: ^0.2.1
   font_awesome_flutter: ^10.1.0
+  akar_icons_flutter: ^1.1.11
+
+  share_plus: ^4.0.10+1
 
   miniplayer:
     git:
@@ -31,8 +34,13 @@ dependencies:
   cached_network_image: ^3.2.1
   youtube_explode_dart: ^1.11.0
 
+  #bloc
   flutter_bloc:
   equatable:
+
+  #database
+  hive:
+  hive_flutter:
 
 dev_dependencies:
   flutter_test:

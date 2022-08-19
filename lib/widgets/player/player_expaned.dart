@@ -70,7 +70,9 @@ class PlayerExpanded extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20.0),
-              const Playlist()
+              Playlist(
+                scrollController: ScrollController(),
+              )
             ],
           ),
         ),

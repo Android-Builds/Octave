@@ -107,9 +107,12 @@ class MyDelegate extends SliverPersistentHeaderDelegate {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Opacity(
-                      opacity: max(1 - shrinkPercentage * 10, 0),
-                      child: leading,
+                    SizedBox(
+                      width: PlayerManager.size.width * 0.7,
+                      child: Opacity(
+                        opacity: max(1 - shrinkPercentage * 10, 0),
+                        child: leading,
+                      ),
                     ),
                     const SizedBox(width: 10.0),
                     button,
