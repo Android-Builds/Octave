@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import '../../services/audio_service.dart';
 import '../../utils/player_manager.dart';
@@ -9,9 +10,11 @@ class Playlist extends StatelessWidget {
   const Playlist({
     Key? key,
     required this.scrollController,
+    required this.panelController,
   }) : super(key: key);
 
   final ScrollController scrollController;
+  final PanelController panelController;
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +104,7 @@ class Playlist extends StatelessWidget {
                             .audioHandler.playbackState.valueOrNull!.playing) {
                           PlayerManager.audioHandler.play();
                         }
-                        Navigator.of(context).pop();
+                        panelController.close();
                       }
                     },
                   ),

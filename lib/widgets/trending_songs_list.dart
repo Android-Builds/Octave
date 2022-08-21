@@ -40,9 +40,12 @@ class TrendingSongsListWidget extends StatelessWidget {
               shrinkWrap: true,
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.all(10.0),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                childAspectRatio: 1.3,
+                childAspectRatio: double.parse(
+                  (PlayerManager.size.height * 0.7 / PlayerManager.size.width)
+                      .toStringAsFixed(2),
+                ),
               ),
               itemCount: trendingSongs.length,
               itemBuilder: (BuildContext context, int index) {

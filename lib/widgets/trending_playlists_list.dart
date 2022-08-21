@@ -1,3 +1,4 @@
+import 'package:beats/utils/player_manager.dart';
 import 'package:beats/widgets/playlist_item.dart';
 import 'package:flutter/material.dart';
 
@@ -59,7 +60,9 @@ class TrendingPlaylistWidget extends StatelessWidget {
                     title: trendingPlaylists[index].title,
                     subtitle: trendingPlaylists[index].subtitle,
                     thumbnail: trendingPlaylists[index].thumbnail,
-                    width: 200.0,
+                    width: PlayerManager.size.width * 0.45,
+                    titleMaxLine: 1,
+                    subtitleMaxLine: 2,
                   ),
                 );
               },

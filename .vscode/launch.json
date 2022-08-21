@@ -1,0 +1,46 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "beats",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "beats (profile mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "beats (release mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        },
+        {
+            "name": "Redmi",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "22c5622c"
+        },
+        {
+            "name": "Asus",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "J8AAGF11X3139EL"
+        },
+    ],
+    "compounds": [
+        {
+            "name": "All Devices",
+            "configurations": [
+                "Redmi",
+                "Asus",
+           ]
+        }
+    ]
+}

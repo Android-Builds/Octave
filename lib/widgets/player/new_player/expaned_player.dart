@@ -1,9 +1,7 @@
 import 'package:audio_service/audio_service.dart';
-import 'package:beats/api/youtube_api.dart';
 import 'package:beats/pages/playlist_page.dart';
 import 'package:beats/widgets/marquee_widget.dart';
 import 'package:beats/widgets/player/player_image.dart';
-import 'package:beats/widgets/player/player_playlist.dart';
 import 'package:flutter/material.dart';
 import 'package:miniplayer/miniplayer.dart' as mp;
 
@@ -83,10 +81,11 @@ class ExpandedPlayer extends StatelessWidget {
                   child: AppBar(
                     centerTitle: true,
                     leading: IconButton(
-                      onPressed: () =>
-                          PlayerManager.miniplayerController.animateToHeight(
-                        state: mp.PanelState.MIN,
-                      ),
+                      onPressed: () {
+                        PlayerManager.miniplayerController.animateToHeight(
+                          state: mp.PanelState.MIN,
+                        );
+                      },
                       icon: const Icon(Icons.keyboard_arrow_down),
                     ),
                     title: Column(
@@ -255,42 +254,8 @@ class ExpandedPlayer extends StatelessWidget {
                             ),
                           ),
                         ),
-                        const Flexible(child: SizedBox(height: 20)),
-
-                        // Flexible(
-                        //   flex: 2,
-                        //   child: Opacity(
-                        //     opacity: opacity,
-                        //     child: SizedBox(
-                        //       height: PlayerManager.size.height * 0.2,
-                        //       width: PlayerManager.size.width * 0.4,
-                        //       child: Card(
-                        //         elevation: 4.0,
-                        //         child: Row(
-                        //           mainAxisAlignment: MainAxisAlignment.center,
-                        //           children: [
-                        //             IconButton(
-                        //               onPressed: () => showPlayList(context),
-                        //               color: Colors.grey,
-                        //               icon: const Icon(Icons.favorite_outline),
-                        //             ),
-                        //             IconButton(
-                        //               onPressed: () => showPlayList(context),
-                        //               color: Colors.grey,
-                        //               icon: const Icon(Icons.playlist_play),
-                        //             ),
-                        //             IconButton(
-                        //               onPressed: () => showLyrics(context),
-                        //               color: Colors.grey,
-                        //               icon: const Icon(Icons.lyrics),
-                        //             ),
-                        //           ],
-                        //         ),
-                        //       ),
-                        //     ),
-                        //   ),
-                        // ),
                         const Flexible(
+                          flex: 2,
                           child: SizedBox.expand(),
                         )
                       ],
@@ -308,100 +273,6 @@ class ExpandedPlayer extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-
-  void showPlayList(BuildContext context) {
-    showModalBottomSheet<void>(
-      isScrollControlled: true,
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(10.0),
-          topRight: Radius.circular(10.0),
-        ),
-      ),
-      builder: (BuildContext context) {
-        return DraggableScrollableSheet(
-          initialChildSize: 1,
-          builder: (BuildContext context, ScrollController scrollController) {
-            return Playlist(scrollController: scrollController);
-          },
-        );
-      },
-    );
-  }
-
-  void showLyrics(BuildContext context) {
-    showModalBottomSheet<void>(
-      context: context,
-      constraints: BoxConstraints.tight(
-        Size(
-          PlayerManager.size.width,
-          PlayerManager.size.height * 0.75,
-        ),
-      ),
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(10.0),
-          topRight: Radius.circular(10.0),
-        ),
-      ),
-      builder: (BuildContext context) {
-        return Stack(
-          alignment: Alignment.center,
-          clipBehavior: Clip.none,
-          children: [
-            FutureBuilder(
-              future: YtmApi.getLyrics(
-                mediaItem.extras!['playlistId'],
-                mediaItem.id,
-              ),
-              builder: (context, AsyncSnapshot snapshot) {
-                if (snapshot.hasData) {
-                  final String lyrics = snapshot.data;
-                  if (lyrics.isEmpty) {
-                    return const Text('No lyrics Available');
-                  } else {
-                    return ListView(
-                      padding: const EdgeInsets.all(10.0),
-                      children: [
-                        Text(
-                          snapshot.data,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(fontWeight: FontWeight.w500),
-                        )
-                      ],
-                    );
-                  }
-                } else {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-              },
-            ),
-            Positioned(
-              top: -PlayerManager.size.height * 0.08,
-              child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(
-                    10.0,
-                  ),
-                  child: Text(
-                    'Lyrics',
-                    style: TextStyle(
-                      fontSize: PlayerManager.size.width * 0.05,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        );
-      },
     );
   }
 }

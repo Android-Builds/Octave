@@ -19,7 +19,7 @@ class PlayerBottomSheet extends StatefulWidget {
 class _PlayerBottomSheetState extends State<PlayerBottomSheet>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  PanelController controller = PanelController();
+  PanelController panelController = PanelController();
 
   @override
   void initState() {
@@ -30,7 +30,7 @@ class _PlayerBottomSheetState extends State<PlayerBottomSheet>
   @override
   Widget build(BuildContext context) {
     return SlidingUpPanel(
-      controller: controller,
+      controller: panelController,
       color: Theme.of(context).colorScheme.secondaryContainer,
       borderRadius: BorderRadius.circular(10.0),
       minHeight: kBottomNavigationBarHeight,
@@ -40,7 +40,7 @@ class _PlayerBottomSheetState extends State<PlayerBottomSheet>
         width: 400.0,
         child: TabBar(
           onTap: (value) {
-            controller.open();
+            panelController.open();
           },
           labelStyle: const TextStyle(
             fontWeight: FontWeight.bold,
@@ -63,7 +63,10 @@ class _PlayerBottomSheetState extends State<PlayerBottomSheet>
           children: [
             Padding(
               padding: const EdgeInsets.only(top: 60.0),
-              child: Playlist(scrollController: scrollController),
+              child: Playlist(
+                scrollController: scrollController,
+                panelController: panelController,
+              ),
             ),
             Center(
               child: Padding(

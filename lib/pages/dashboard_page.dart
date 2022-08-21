@@ -81,6 +81,7 @@ class _DashboardState extends State<Dashboard> {
             currentIndex: PlayerManager.navbarIndex.value,
             onTap: (int index) => setState(() {
               PlayerManager.navbarIndex.value = index;
+              Navigator.maybePop(context);
             }),
             items: const [
               BottomNavigationBarItem(

@@ -343,7 +343,7 @@ packages:
     description:
       path: "."
       ref: master
-      resolved-ref: "45b1c2213d65290f93357f8be28795863707308d"
+      resolved-ref: "0d46601401799d91fb37916298352bb8243421de"
       url: "https://github.com/Android-Builds/miniplayer"
     source: git
     version: "1.1.0"
