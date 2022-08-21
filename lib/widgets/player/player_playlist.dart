@@ -39,7 +39,7 @@ class Playlist extends StatelessWidget {
                   alignment: Alignment.centerRight,
                   child: const Padding(
                     padding: EdgeInsets.only(right: 8.0),
-                    child: Icon(Icons.delete, color: Colors.white),
+                    child: Icon(Icons.delete),
                   ),
                 ),
                 onDismissed: (dismissDirection) {
@@ -47,7 +47,7 @@ class Playlist extends StatelessWidget {
                 },
                 child: Material(
                   color: i == queueState.queueIndex
-                      ? Theme.of(context).colorScheme.secondaryContainer
+                      ? Theme.of(context).colorScheme.background
                       : Colors.transparent,
                   child: ListTile(
                     leading: Stack(
