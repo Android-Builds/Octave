@@ -14,70 +14,73 @@ class DiscoverPage extends StatefulWidget {
 class _DiscoverPageState extends State<DiscoverPage> {
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: YtmApi.getMoodsAndGenres(),
-      builder: (context, AsyncSnapshot snapshot) {
-        if (snapshot.hasData) {
-          List<dynamic> moodsAndGenres = snapshot.data;
-          return ListView.builder(
-            padding: const EdgeInsets.all(10.0),
-            shrinkWrap: true,
-            itemCount: moodsAndGenres.length,
-            physics: const NeverScrollableScrollPhysics(),
-            itemBuilder: (context, index) => Column(
-              children: [
-                ListTile(
-                  dense: true,
-                  title: Text(
-                    moodsAndGenres[index]['title'],
-                    style: TextStyle(
-                      fontSize: PlayerManager.size.width * 0.06,
-                      fontWeight: FontWeight.bold,
+    return Scaffold(
+      appBar: AppBar(title: const Text('Discover')),
+      body: FutureBuilder(
+        future: YtmApi.getMoodsAndGenres(),
+        builder: (context, AsyncSnapshot snapshot) {
+          if (snapshot.hasData) {
+            List<dynamic> moodsAndGenres = snapshot.data;
+            return ListView.builder(
+              padding: const EdgeInsets.all(10.0),
+              itemCount: moodsAndGenres.length,
+              physics: const NeverScrollableScrollPhysics(),
+              itemBuilder: (context, index) => Column(
+                children: [
+                  ListTile(
+                    dense: true,
+                    title: Text(
+                      moodsAndGenres[index]['title'],
+                      style: TextStyle(
+                        fontSize: PlayerManager.size.width * 0.06,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ),
-                GridView.builder(
-                  shrinkWrap: true,
-                  itemCount: moodsAndGenres[index]['items'].length,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 2.5,
-                  ),
-                  itemBuilder: (context, internalIndex) => InkWell(
-                    onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => MoodsAndGenres(
-                            moodsAndGenreMap: moodsAndGenres[index]['items']
-                                [internalIndex],
+                  GridView.builder(
+                    shrinkWrap: true,
+                    itemCount: moodsAndGenres[index]['items'].length,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 2.5,
+                    ),
+                    itemBuilder: (context, internalIndex) => InkWell(
+                      onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MoodsAndGenres(
+                              moodsAndGenreMap: moodsAndGenres[index]['items']
+                                  [internalIndex],
+                            ),
+                          )),
+                      child: Card(
+                        color: Color(moodsAndGenres[index]['items']
+                                [internalIndex]['color'])
+                            .withOpacity(0.1),
+                        child: Center(
+                          child: Text(
+                            moodsAndGenres[index]['items'][internalIndex]
+                                ['title'],
+                            style: TextStyle(
+                                fontSize: PlayerManager.size.width * 0.04),
                           ),
-                        )),
-                    child: Card(
-                      color: Color(moodsAndGenres[index]['items'][internalIndex]
-                              ['color'])
-                          .withOpacity(0.1),
-                      child: Center(
-                        child: Text(
-                          moodsAndGenres[index]['items'][internalIndex]
-                              ['title'],
-                          style: TextStyle(
-                              fontSize: PlayerManager.size.width * 0.04),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          );
-        } else {
-          return SizedBox(
-            height: PlayerManager.size.height * 0.8,
-            child: const Center(child: CircularProgressIndicator()),
-          );
-        }
-      },
+                ],
+              ),
+            );
+          } else {
+            return SizedBox(
+              height: PlayerManager.size.height * 0.8,
+              child: const Center(child: CircularProgressIndicator()),
+            );
+          }
+        },
+      ),
     );
   }
 }

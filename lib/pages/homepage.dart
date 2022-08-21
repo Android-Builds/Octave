@@ -45,10 +45,9 @@ class HomePage extends StatelessWidget {
         builder: (context, int value, child) => ListView(
           shrinkWrap: true,
           children: [
-            const <Widget>[
-              ForYouWidget(),
-              DiscoverPage(),
-              TrendingPage(),
+            <Widget>[
+              const ForYouWidget(),
+              Container(),
             ][value],
             StreamBuilder<PlaybackState>(
               stream: PlayerManager.audioHandler.playbackState,

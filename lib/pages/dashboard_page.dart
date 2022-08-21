@@ -89,12 +89,8 @@ class _DashboardState extends State<Dashboard> {
                 label: 'For You',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.explore),
-                label: 'Discover',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Ionicons.trending_up),
-                label: 'Trending',
+                icon: Icon(Icons.library_music),
+                label: 'Library',
               ),
             ],
           ),

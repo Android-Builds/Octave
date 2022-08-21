@@ -1,6 +1,9 @@
+import 'package:beats/pages/discover_page.dart';
+import 'package:beats/pages/trending_page.dart';
 import 'package:beats/utils/constants.dart';
 import 'package:beats/utils/player_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:ionicons/ionicons.dart';
 
 import '../api/youtube_api.dart';
 import 'trending_playlists_list.dart';
@@ -29,42 +32,54 @@ class ForYouWidget extends StatelessWidget {
       builder: (context, AsyncSnapshot snapshot) {
         if (snapshot.hasData) {
           List data = snapshot.data;
-          return ListView.builder(
+          return ListView(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: data.length + 1,
-            itemBuilder: (context, index) {
-              if (index == 0) {
-                return Padding(
-                  padding: const EdgeInsets.only(
-                    left: 20.0,
-                    bottom: 5.0,
-                  ),
-                  child: Row(
-                    children: [
-                      Text(
-                        '${getTimeSpecificGreetings()}, ${Constants.userName}',
-                        style: TextStyle(
-                          fontSize: PlayerManager.size.height * 0.04,
-                          fontWeight: FontWeight.bold,
-                        ),
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(
+                  left: 20.0,
+                  bottom: 5.0,
+                ),
+                child: Row(
+                  children: [
+                    Text(
+                      '${getTimeSpecificGreetings()}, ${Constants.userName}',
+                      style: TextStyle(
+                        fontSize: PlayerManager.size.height * 0.04,
+                        fontWeight: FontWeight.bold,
                       ),
-                    ],
+                    ),
+                  ],
+                ),
+              ),
+              Row(
+                children: [
+                  discoveryCards(
+                    context,
+                    'Discover',
+                    Ionicons.compass,
+                    const DiscoverPage(),
                   ),
-                );
-              }
-              if (data[index - 1]['type'] == ContentType.songlist) {
-                return TrendingSongsListWidget(
-                  title: data[index - 1]['title'],
-                  trendingSongs: data[index - 1]['list'],
-                );
-              } else {
-                return TrendingPlaylistWidget(
-                  title: data[index - 1]['title'],
-                  trendingPlaylists: data[index - 1]['list'],
-                );
-              }
-            },
+                  discoveryCards(
+                    context,
+                    'Trending',
+                    Ionicons.trending_up,
+                    const TrendingPage(),
+                  ),
+                ],
+              ),
+              for (Map contentMap in data)
+                contentMap['type'] == ContentType.songlist
+                    ? TrendingSongsListWidget(
+                        title: contentMap['title'],
+                        trendingSongs: contentMap['list'],
+                      )
+                    : TrendingPlaylistWidget(
+                        title: contentMap['title'],
+                        trendingPlaylists: contentMap['list'],
+                      )
+            ],
           );
         } else {
           return SizedBox(
@@ -73,6 +88,36 @@ class ForYouWidget extends StatelessWidget {
           );
         }
       },
+    );
+  }
+
+  Widget discoveryCards(
+    BuildContext context,
+    String title,
+    IconData icon,
+    Widget targetPage,
+  ) {
+    return Flexible(
+      child: TextButton(
+        onPressed: () => Navigator.push(
+            context, MaterialPageRoute(builder: (context) => TrendingPage())),
+        child: Card(
+          child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(icon),
+                const SizedBox(width: 10.0),
+                Text(
+                  title,
+                  style: TextStyle(fontSize: PlayerManager.size.width * 0.05),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
