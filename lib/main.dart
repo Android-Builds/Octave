@@ -4,6 +4,7 @@ import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive_flutter/adapters.dart';
 
 import 'blocs/search_bloc/search_bloc.dart';
 import 'blocs/task_execution_bloc/task_execution_bloc.dart';
@@ -11,6 +12,10 @@ import 'utils/player_manager.dart';
 
 Future<void> main() async {
   await PlayerManager.initPlayer();
+  WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+  await Hive.openBox('favouritePlaylists');
+  // await Hive.openBox('prefs');
   runApp(const MyApp());
 }
 

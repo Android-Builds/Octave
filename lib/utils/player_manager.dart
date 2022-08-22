@@ -89,7 +89,7 @@ class PlayerManager {
     _audioHandler = await AudioService.init(
       builder: () => AudioPlayerHandlerImpl(),
       config: const AudioServiceConfig(
-        androidNotificationChannelId: 'com.ryanheise.myapp.channel.audio',
+        androidNotificationChannelId: 'sudo.dev.octave.channel.audio',
         androidNotificationChannelName: 'Audio playback',
         androidNotificationOngoing: true,
       ),
@@ -122,7 +122,7 @@ class PlayerManager {
     await _audioHandler.updateQueue(items);
     await _audioHandler.skipToQueueItem(index ?? 0);
     await _audioHandler.play();
-    _miniplayerController.animateToHeight(state: mp.PanelState.MAX);
+    //_miniplayerController.animateToHeight(state: mp.PanelState.MAX);
   }
 
   static String parsedDuration(Duration duration) {

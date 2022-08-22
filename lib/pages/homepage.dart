@@ -1,6 +1,5 @@
 import 'package:audio_service/audio_service.dart';
-import 'package:beats/pages/discover_page.dart';
-import 'package:beats/pages/trending_page.dart';
+import 'package:beats/pages/library.dart';
 import 'package:beats/widgets/for_you_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -45,9 +44,9 @@ class HomePage extends StatelessWidget {
         builder: (context, int value, child) => ListView(
           shrinkWrap: true,
           children: [
-            <Widget>[
-              const ForYouWidget(),
-              Container(),
+            const <Widget>[
+              ForYouWidget(),
+              Library(),
             ][value],
             StreamBuilder<PlaybackState>(
               stream: PlayerManager.audioHandler.playbackState,

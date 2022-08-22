@@ -99,8 +99,8 @@ class ForYouWidget extends StatelessWidget {
   ) {
     return Flexible(
       child: TextButton(
-        onPressed: () => Navigator.push(
-            context, MaterialPageRoute(builder: (context) => TrendingPage())),
+        onPressed: () => Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const TrendingPage())),
         child: Card(
           child: Padding(
             padding: const EdgeInsets.all(10.0),

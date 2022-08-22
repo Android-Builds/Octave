@@ -8,12 +8,14 @@ class MyDelegate extends SliverPersistentHeaderDelegate {
   final String title;
   final String imageUrl;
   final Widget leading;
+  final List<Widget> actions;
   final Widget button;
 
   const MyDelegate({
     required this.title,
     required this.imageUrl,
     required this.leading,
+    required this.actions,
     required this.button,
   });
 
@@ -36,8 +38,8 @@ class MyDelegate extends SliverPersistentHeaderDelegate {
               Opacity(
                 opacity: 1 - shrinkPercentage,
                 child: Container(
-                  height: PlayerManager.size.height * 0.4,
-                  width: PlayerManager.size.height * 0.4,
+                  height: PlayerManager.size.height * 0.34,
+                  width: PlayerManager.size.height * 0.34,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10.0),
                     image: DecorationImage(
@@ -78,21 +80,19 @@ class MyDelegate extends SliverPersistentHeaderDelegate {
                         icon: const Icon(Icons.arrow_back),
                         onPressed: () => Navigator.pop(context),
                       ),
-                      Flexible(
-                        child: Opacity(
-                          opacity: shrinkPercentage,
-                          child: Text(
-                            title,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
+                      const Spacer(),
+                      Opacity(
+                        opacity: shrinkPercentage,
+                        child: Text(
+                          title,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
                           ),
                         ),
                       ),
-                      const Icon(
-                        Icons.more_vert,
-                      ),
+                      const Spacer(),
+                      const Spacer(),
                     ],
                   ),
                 ),
@@ -101,21 +101,27 @@ class MyDelegate extends SliverPersistentHeaderDelegate {
             Positioned(
               bottom: (-kToolbarHeight * 0.7) * shrinkPercentage,
               left: 0,
-              right: 10 * shrinkPercentage,
+              right: 10,
               child: Padding(
                 padding: const EdgeInsets.all(10.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                child: Column(
                   children: [
                     SizedBox(
-                      width: PlayerManager.size.width * 0.7,
+                      width: PlayerManager.size.width * 0.8,
                       child: Opacity(
                         opacity: max(1 - shrinkPercentage * 10, 0),
                         child: leading,
                       ),
                     ),
-                    const SizedBox(width: 10.0),
-                    button,
+                    Row(children: [
+                      for (Widget w in actions)
+                        Opacity(
+                          opacity: max(1 - shrinkPercentage * 10, 0),
+                          child: w,
+                        ),
+                      const Spacer(),
+                      button,
+                    ]),
                   ],
                 ),
               ),

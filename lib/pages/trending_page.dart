@@ -73,6 +73,10 @@ class _TrendingPageState extends State<TrendingPage> {
                       children: [
                         ListTile(
                           dense: true,
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 10.0,
+                            horizontal: 20.0,
+                          ),
                           title: Text(
                             trendingMap[index]['title'],
                             style: TextStyle(
@@ -89,6 +93,7 @@ class _TrendingPageState extends State<TrendingPage> {
                                 AxisDirection.down,
                             child: GridView.builder(
                                 shrinkWrap: true,
+                                padding: const EdgeInsets.all(10.0),
                                 itemCount: trendingMap[index]['items'].length,
                                 scrollDirection: Axis.horizontal,
                                 gridDelegate:
@@ -96,7 +101,7 @@ class _TrendingPageState extends State<TrendingPage> {
                                   crossAxisCount: 2,
                                   childAspectRatio: double.parse(
                                     (PlayerManager.size.height *
-                                            0.7 /
+                                            0.72 /
                                             PlayerManager.size.width)
                                         .toStringAsFixed(2),
                                   ),

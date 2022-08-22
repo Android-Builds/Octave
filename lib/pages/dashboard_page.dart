@@ -1,7 +1,6 @@
 import 'package:beats/pages/homepage.dart';
 import 'package:beats/widgets/player/new_player/player.dart';
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
 
 import '../utils/player_manager.dart';
 
