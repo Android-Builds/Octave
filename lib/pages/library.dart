@@ -5,6 +5,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 
+import 'library/favourite_playlists.dart';
+
 class Library extends StatefulWidget {
   const Library({Key? key}) : super(key: key);
 
@@ -26,11 +28,20 @@ class _LibraryState extends State<Library> {
         ListTile(
           dense: true,
           title: Text(
-            'Favourites',
+            'Favourite Playlists',
             style: TextStyle(
               fontSize: PlayerManager.size.width * 0.05,
               fontWeight: FontWeight.bold,
             ),
+          ),
+          trailing: TextButton(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const FavouritePlaylists(),
+              ),
+            ),
+            child: const Text('More'),
           ),
         ),
         SizedBox(
@@ -39,15 +50,14 @@ class _LibraryState extends State<Library> {
             valueListenable: favouritePlaylistsListenable(),
             builder: (context, Box favouritePlaylistBox, _) {
               return NotificationListener<OverscrollNotification>(
-                // Suppress OverscrollNotification events that escape from the inner scrollable
                 onNotification: (notification) =>
                     notification.metrics.axisDirection != AxisDirection.down,
                 child: ListView.builder(
                   shrinkWrap: true,
                   scrollDirection: Axis.horizontal,
-                  itemCount: favouritePlaylistBox.isNotEmpty
-                      ? favouritePlaylistBox.length
-                      : 0,
+                  itemCount: favouritePlaylistBox.length > 4
+                      ? 4
+                      : favouritePlaylistBox.length,
                   itemBuilder: (context, index) => TextButton(
                     onPressed: () => Navigator.push(
                       context,
