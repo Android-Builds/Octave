@@ -44,7 +44,7 @@ class ForYouWidget extends StatelessWidget {
                 child: Row(
                   children: [
                     Text(
-                      '${getTimeSpecificGreetings()}, ${Constants.userName}',
+                      '${getTimeSpecificGreetings()}, $userName',
                       style: TextStyle(
                         fontSize: PlayerManager.size.height * 0.04,
                         fontWeight: FontWeight.bold,

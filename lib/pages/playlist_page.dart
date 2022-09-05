@@ -1,12 +1,13 @@
 import 'package:akar_icons_flutter/akar_icons_flutter.dart';
 import 'package:beats/api/youtube_api.dart';
 import 'package:beats/classes/playlist.dart';
+import 'package:beats/utils/constants.dart';
 import 'package:beats/utils/db_helper.dart';
 import 'package:beats/utils/player_manager.dart';
+import 'package:beats/widgets/playlist_list.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 import '../widgets/custom_delegate.dart';
 
@@ -32,6 +33,76 @@ class _PlaylistPageState extends State<PlaylistPage> {
     Future.delayed(const Duration(milliseconds: 100),
         () => PlayerManager.navbarHeight.value = 0);
     super.initState();
+  }
+
+  Future<void> showMenu(SongPlayList playlist) async {
+    TextStyle menuStyle = TextStyle(
+      fontSize: PlayerManager.size.width * 0.035,
+    );
+    showModalBottomSheet<void>(
+      isScrollControlled: true,
+      enableDrag: true,
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(10.0),
+          topRight: Radius.circular(10.0),
+        ),
+      ),
+      builder: (BuildContext context) {
+        return Padding(
+          padding: const EdgeInsets.only(
+            top: 10.0,
+            right: 5.0,
+            left: 5.0,
+          ),
+          child: Wrap(
+            children: [
+              ListTile(
+                dense: true,
+                leading: const Icon(Icons.playlist_add),
+                onTap: () {},
+                title: Text(
+                  'Add to queue',
+                  style: menuStyle,
+                ),
+              ),
+              ListTile(
+                dense: true,
+                leading: const Icon(Icons.import_export),
+                onTap: () async {
+                  await importPlaylist(playlist).then((value) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Playlist Imported'),
+                      ),
+                    );
+                    Navigator.of(context).pop();
+                  });
+                },
+                title: Text(
+                  'Import',
+                  style: menuStyle,
+                ),
+              ),
+              ListTile(
+                dense: true,
+                leading: const Icon(AkarIcons.arrow_forward_thick),
+                onTap: () {
+                  Share.share(
+                    '$playlistPrefix${widget.playlistId.replaceAll('VL', '')}&feature=share',
+                  );
+                },
+                title: Text(
+                  'Share',
+                  style: menuStyle,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -104,68 +175,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                               shape: const CircleBorder(),
                               padding: const EdgeInsets.all(20),
                             ),
-                            onPressed: () {
-                              TextStyle menuStyle = TextStyle(
-                                fontSize: PlayerManager.size.width * 0.035,
-                              );
-                              showModalBottomSheet<void>(
-                                isScrollControlled: true,
-                                enableDrag: true,
-                                context: context,
-                                shape: const RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(10.0),
-                                    topRight: Radius.circular(10.0),
-                                  ),
-                                ),
-                                builder: (BuildContext context) {
-                                  return Padding(
-                                    padding: const EdgeInsets.only(
-                                      top: 10.0,
-                                      right: 5.0,
-                                      left: 5.0,
-                                    ),
-                                    child: Wrap(
-                                      children: [
-                                        ListTile(
-                                          dense: true,
-                                          leading:
-                                              const Icon(Icons.playlist_add),
-                                          onTap: () {},
-                                          title: Text(
-                                            'Add to queue',
-                                            style: menuStyle,
-                                          ),
-                                        ),
-                                        ListTile(
-                                          dense: true,
-                                          leading:
-                                              const Icon(Icons.import_export),
-                                          onTap: () {},
-                                          title: Text(
-                                            'Import',
-                                            style: menuStyle,
-                                          ),
-                                        ),
-                                        ListTile(
-                                          dense: true,
-                                          leading: const Icon(
-                                              AkarIcons.arrow_forward_thick),
-                                          onTap: () {
-                                            Share.share(
-                                                'https://music.youtube.com/playlist?list=${widget.playlistId.replaceAll('VL', '')}&feature=share');
-                                          },
-                                          title: Text(
-                                            'Share',
-                                            style: menuStyle,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                },
-                              );
-                            },
+                            onPressed: () => showMenu(playlist),
                             child: const Icon(Icons.more_vert),
                           ),
                           TextButton(
@@ -193,43 +203,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                     ),
                   ];
                 },
-                body: ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: playlist.items.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      onTap: () {
-                        if (PlayerManager
-                            .audioHandler.playbackState.valueOrNull!.playing) {
-                          PlayerManager.audioHandler.skipToQueueItem(index);
-                        } else {
-                          PlayerManager.addToPlaylistAndPlay(
-                              playlist.items, index);
-                        }
-                      },
-                      leading: ClipRRect(
-                        borderRadius: BorderRadius.circular(5.0),
-                        child: Image.network(
-                          playlist.items[index].artUri.toString(),
-                          height: PlayerManager.size.width * 0.15,
-                          width: PlayerManager.size.width * 0.15,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      title: Text(
-                        formatSongTitle(playlist.items[index].title),
-                        maxLines: 1,
-                        overflow: TextOverflow.clip,
-                      ),
-                      subtitle: Text(
-                        '${playlist.items[index].artist} \u2022 '
-                        '${RegExp(r'((^0*[1-9]\d*:)?\d{2}:\d{2})\.\d+$').firstMatch("${playlist.items[index].duration}")?.group(1)}',
-                        maxLines: 2,
-                      ),
-                    );
-                  },
-                ),
+                body: PlaylistList(playlist: playlist.items),
               );
             } else {
               return const Center(
@@ -240,46 +214,6 @@ class _PlaylistPageState extends State<PlaylistPage> {
         ),
       ),
     );
-  }
-
-  getDuration(List<Video> playlistSongs) {
-    List<String>? times = RegExp(r'((^0*[1-9]\d*:)?\d{2}:\d{2})\.\d+$')
-        .firstMatch(
-            "${Duration(seconds: playlistSongs.map((e) => e.duration!.inSeconds).fold(0, (previousValue, element) => int.parse(previousValue.toString()) + element))}")
-        ?.group(1)!
-        .split(':');
-
-    return '${times!.first}h ${times[1]}m';
-  }
-
-  formatSongTitle(String text) {
-    String title = text
-        .replaceAll("#", '')
-        .replaceAll(' |', ', ')
-        .replaceAll(' ,', ',')
-        .replaceAll('   ', ' ')
-        .replaceAll('Video', '')
-        .replaceAll('VIDEO', '')
-        .replaceAll('Full ', '')
-        .replaceAll('Official ', '')
-        .replaceAll(' -  - ', ' - ')
-        .replaceAllMapped(RegExp(r',\s{0,1}[a-z]*'), (match) => '')
-        .replaceAll('()', '')
-        .replaceAll('  ', ' ')
-        .trim();
-    // .replaceAll('- |', '|')
-    // .replaceAll('\u2013 |', '|')
-    // .replaceAll('@', '')
-    // .replaceAll('()', '')
-    // .replaceAll('( )', '')
-    // .replaceAll('  ', ' ')
-    // .replaceAll("#", '')
-    // .replaceAll(' |', ', ')
-    // .replaceAllMapped(RegExp(r'[a-z]{0}:.'), (match) => '')
-    // .replaceAllMapped(RegExp(r',\s{0,1}[a-z]*'), (match) => '')
-    // .trim();
-
-    return '${title.substring(0, 1).toUpperCase()}${title.substring(1)}';
   }
 
   @override

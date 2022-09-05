@@ -32,8 +32,8 @@ class _PlayerState extends State<Player> {
             controller: PlayerManager.miniplayerController,
             backgroundColor: Theme.of(context).colorScheme.background,
             valueNotifier: PlayerManager.playerExpandProgress,
-            minHeight: Constants.minHeight,
-            maxHeight: Constants.maxHeight,
+            minHeight: minHeight,
+            maxHeight: maxHeight,
             curve: Curves.easeOut,
             isActive: playbackState.playing,
             onDismissed: () {

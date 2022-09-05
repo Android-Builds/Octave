@@ -1,12 +1,13 @@
 import 'package:audio_service/audio_service.dart';
+import 'package:beats/pages/local_playlist_list.dart';
 import 'package:beats/pages/playlist_page.dart';
+import 'package:beats/utils/constants.dart';
 import 'package:beats/widgets/marquee_widget.dart';
 import 'package:beats/widgets/player/player_image.dart';
 import 'package:flutter/material.dart';
 import 'package:miniplayer/miniplayer.dart' as mp;
 
 import '../common.dart';
-import '../../../utils/constants.dart';
 import '../../../utils/player_manager.dart';
 import '../control_buttons.dart';
 import 'bottom_sheet.dart';
@@ -31,20 +32,20 @@ class ExpandedPlayer extends StatelessWidget {
     }
 
     var percentageExpandedPlayer = PlayerManager.percentageFromValueInRange(
-      min: Constants.maxHeight * 0.2 + Constants.minHeight,
-      max: Constants.maxHeight,
+      min: maxHeight * 0.2 + minHeight,
+      max: maxHeight,
       value: height,
     );
 
     var opacity = PlayerManager.percentageFromValueInRange(
-      min: Constants.maxHeight * 0.5 + Constants.minHeight,
-      max: Constants.maxHeight,
+      min: maxHeight * 0.5 + minHeight,
+      max: maxHeight,
       value: height,
     );
 
     var sheetOpacity = PlayerManager.percentageFromValueInRange(
-      min: Constants.maxHeight * 0.7,
-      max: Constants.maxHeight,
+      min: maxHeight * 0.7,
+      max: maxHeight,
       value: height,
     );
 
@@ -58,9 +59,8 @@ class ExpandedPlayer extends StatelessWidget {
       percentage: percentageExpandedPlayer,
     );
     final double heightWithoutPadding = height - paddingVertical * 2;
-    final double imageSize = heightWithoutPadding > Constants.maxImgSize
-        ? Constants.maxImgSize
-        : heightWithoutPadding;
+    final double imageSize =
+        heightWithoutPadding > maxImgSize ? maxImgSize : heightWithoutPadding;
     final paddingLeft = PlayerManager.valueFromPercentageInRange(
           min: 0,
           max: PlayerManager.size.width - imageSize,
@@ -110,71 +110,7 @@ class ExpandedPlayer extends StatelessWidget {
                     ),
                     actions: [
                       IconButton(
-                        onPressed: () {
-                          showModalBottomSheet<void>(
-                            isScrollControlled: true,
-                            enableDrag: true,
-                            context: context,
-                            shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(10.0),
-                                topRight: Radius.circular(10.0),
-                              ),
-                            ),
-                            builder: (BuildContext context) {
-                              return Padding(
-                                padding: const EdgeInsets.only(
-                                  top: 10.0,
-                                  right: 5.0,
-                                  left: 5.0,
-                                ),
-                                child: Wrap(
-                                  children: [
-                                    ListTile(
-                                      dense: true,
-                                      leading: const Icon(Icons.playlist_add),
-                                      onTap: () {},
-                                      title: const Text('Add to Playlist'),
-                                    ),
-                                    ListTile(
-                                      dense: true,
-                                      enabled: mediaItem.extras!
-                                          .containsKey('albumId'),
-                                      leading: const Icon(Icons.album),
-                                      onTap: () {
-                                        Navigator.pop(context);
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => PlaylistPage(
-                                              playlistId:
-                                                  mediaItem.extras!['albumId'],
-                                              thumbnail:
-                                                  mediaItem.artUri.toString(),
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                      title: const Text('Go to Album'),
-                                    ),
-                                    ListTile(
-                                      dense: true,
-                                      leading: const Icon(Icons.person),
-                                      onTap: () {},
-                                      title: const Text('Go to Artist'),
-                                    ),
-                                    ListTile(
-                                      dense: true,
-                                      leading: const Icon(Icons.save),
-                                      onTap: () {},
-                                      title: const Text('Save Song'),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                          );
-                        },
+                        onPressed: () => showMenu(context),
                         icon: const Icon(Icons.more_vert),
                       )
                     ],
@@ -273,6 +209,112 @@ class ExpandedPlayer extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Future<void> showMenu(BuildContext context) async {
+    showModalBottomSheet<void>(
+      isScrollControlled: true,
+      enableDrag: true,
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(10.0),
+          topRight: Radius.circular(10.0),
+        ),
+      ),
+      builder: (BuildContext context) {
+        return Padding(
+          padding: const EdgeInsets.only(
+            top: 10.0,
+            right: 5.0,
+            left: 5.0,
+          ),
+          child: Wrap(
+            children: [
+              ListTile(
+                dense: true,
+                leading: const Icon(Icons.playlist_add),
+                onTap: () => addToPlaylist(
+                  context,
+                  mediaItem,
+                ),
+                title: const Text('Add to Playlist'),
+              ),
+              ListTile(
+                dense: true,
+                enabled: mediaItem.extras!.containsKey('albumId'),
+                leading: const Icon(Icons.album),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PlaylistPage(
+                        playlistId: mediaItem.extras!['albumId'],
+                        thumbnail: mediaItem.artUri.toString(),
+                      ),
+                    ),
+                  );
+                },
+                title: const Text('Go to Album'),
+              ),
+              ListTile(
+                dense: true,
+                leading: const Icon(Icons.person),
+                onTap: () {},
+                title: const Text('Go to Artist'),
+              ),
+              ListTile(
+                dense: true,
+                leading: const Icon(Icons.save),
+                onTap: () {},
+                title: const Text('Save Song'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> addToPlaylist(
+    BuildContext context,
+    MediaItem mediaItem,
+  ) async {
+    showModalBottomSheet<void>(
+      isScrollControlled: true,
+      enableDrag: true,
+      context: context,
+      backgroundColor: Theme.of(context).colorScheme.background,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(10.0),
+          topRight: Radius.circular(10.0),
+        ),
+      ),
+      builder: (BuildContext context) {
+        return Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Wrap(
+            alignment: WrapAlignment.center,
+            children: [
+              LocalPlaylistList(
+                mediaItem: mediaItem,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {},
+                    child: const Text('+ New Playlist'),
+                  )
+                ],
+              )
+            ],
+          ),
+        );
+      },
     );
   }
 }

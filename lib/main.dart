@@ -15,6 +15,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   await Hive.openBox('favouritePlaylists');
+  await Hive.openBox('importedPlaylists');
   // await Hive.openBox('prefs');
   runApp(const MyApp());
 }

@@ -26,8 +26,8 @@ class CollapsedPlayer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final percentageMiniplayer = PlayerManager.percentageFromValueInRange(
-      min: Constants.minHeight,
-      max: Constants.maxHeight * 0.2 + Constants.minHeight,
+      min: minHeight,
+      max: maxHeight * 0.2 + minHeight,
       value: height,
     );
 
@@ -58,8 +58,8 @@ class CollapsedPlayer extends StatelessWidget {
                   ),
                   child: ConstrainedBox(
                     constraints: BoxConstraints(
-                      maxHeight: Constants.maxImgSize,
-                      maxWidth: Constants.maxImgSize,
+                      maxHeight: maxImgSize,
+                      maxWidth: maxImgSize,
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(5.0),
