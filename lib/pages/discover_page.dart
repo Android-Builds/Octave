@@ -1,6 +1,8 @@
 import 'package:beats/api/youtube_api.dart';
+import 'package:beats/blocs/api_call_bloc/api_call_bloc.dart';
 import 'package:beats/pages/moods_and_genre.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../utils/player_manager.dart';
 
@@ -12,19 +14,31 @@ class DiscoverPage extends StatefulWidget {
 }
 
 class _DiscoverPageState extends State<DiscoverPage> {
+  static final ApiCallBloc bloc = ApiCallBloc();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Discover')),
-      body: FutureBuilder(
-        future: YtmApi.getMoodsAndGenres(),
-        builder: (context, AsyncSnapshot snapshot) {
-          if (snapshot.hasData) {
-            List<dynamic> moodsAndGenres = snapshot.data;
+      body: BlocBuilder<ApiCallBloc, ApiCallBlocState>(
+        bloc: bloc,
+        builder: (context, state) {
+          if (state is ApiCallBlocInitial) {
+            bloc.add(const FetchApiWithNoParams(YtmApi.getMoodsAndGenres));
+            return SizedBox(
+              height: PlayerManager.size.height * 0.8,
+              child: const Center(child: CircularProgressIndicator()),
+            );
+          } else if (state is ApiCallBlocLaoding) {
+            return SizedBox(
+              height: PlayerManager.size.height * 0.8,
+              child: const Center(child: CircularProgressIndicator()),
+            );
+          } else if (state is ApiCallBlocFinal) {
+            List<dynamic> moodsAndGenres = state.data;
             return ListView.builder(
               padding: const EdgeInsets.all(10.0),
               itemCount: moodsAndGenres.length,
-              physics: const NeverScrollableScrollPhysics(),
               itemBuilder: (context, index) => Column(
                 children: [
                   ListTile(
@@ -76,7 +90,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
           } else {
             return SizedBox(
               height: PlayerManager.size.height * 0.8,
-              child: const Center(child: CircularProgressIndicator()),
+              child: const Center(child: Text('Error')),
             );
           }
         },

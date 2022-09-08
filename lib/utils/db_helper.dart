@@ -1,6 +1,5 @@
 library dbhelper;
 
-import 'package:audio_service/audio_service.dart';
 import 'package:beats/classes/local_playlist.dart';
 import 'package:beats/classes/playlist.dart';
 import 'package:flutter/foundation.dart';

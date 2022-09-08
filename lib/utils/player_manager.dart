@@ -18,6 +18,8 @@ class PlayerManager {
   static final MiniplayerController _miniplayerController =
       MiniplayerController();
 
+  static String countryCode = 'ZZ';
+
   static final PanelController _panelController = PanelController();
 
   static ValueNotifier<int> navbarIndex = ValueNotifier(0);

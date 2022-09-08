@@ -1,8 +1,10 @@
+import 'package:beats/blocs/api_call_bloc/api_call_bloc.dart';
 import 'package:beats/pages/discover_page.dart';
 import 'package:beats/pages/trending_page.dart';
 import 'package:beats/utils/constants.dart';
 import 'package:beats/utils/player_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ionicons/ionicons.dart';
 
 import '../api/youtube_api.dart';
@@ -25,68 +27,82 @@ class ForYouWidget extends StatelessWidget {
     }
   }
 
+  static final ApiCallBloc bloc = ApiCallBloc();
+
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: YtmApi.getHomePage(),
-      builder: (context, AsyncSnapshot snapshot) {
-        if (snapshot.hasData) {
-          List data = snapshot.data;
-          return ListView(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(
-                  left: 20.0,
-                  bottom: 5.0,
-                ),
-                child: Row(
-                  children: [
-                    Text(
-                      '${getTimeSpecificGreetings()}, $userName',
-                      style: TextStyle(
-                        fontSize: PlayerManager.size.height * 0.04,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Row(
-                children: [
-                  discoveryCards(
-                    context,
-                    'Discover',
-                    Ionicons.compass,
-                    const DiscoverPage(),
-                  ),
-                  discoveryCards(
-                    context,
-                    'Trending',
-                    Ionicons.trending_up,
-                    const TrendingPage(),
-                  ),
-                ],
-              ),
-              for (Map contentMap in data)
-                contentMap['type'] == ContentType.songlist
-                    ? TrendingSongsListWidget(
-                        title: contentMap['title'],
-                        trendingSongs: contentMap['list'],
-                      )
-                    : TrendingPlaylistWidget(
-                        title: contentMap['title'],
-                        trendingPlaylists: contentMap['list'],
-                      )
-            ],
-          );
-        } else {
+    return BlocBuilder<ApiCallBloc, ApiCallBlocState>(
+      bloc: bloc,
+      builder: (context, state) {
+        if (state is ApiCallBlocInitial) {
+          bloc.add(const FetchApiWithNoParams(YtmApi.getHomePage));
           return SizedBox(
             height: PlayerManager.size.height * 0.8,
             child: const Center(child: CircularProgressIndicator()),
           );
+        } else if (state is ApiCallBlocLaoding) {
+          return SizedBox(
+            height: PlayerManager.size.height * 0.8,
+            child: const Center(child: CircularProgressIndicator()),
+          );
+        } else if (state is ApiCallBlocFinal) {
+          return RefreshIndicator(
+            triggerMode: RefreshIndicatorTriggerMode.anywhere,
+            onRefresh: () async {
+              bloc.add(const FetchApiWithNoParams(YtmApi.getHomePage));
+            },
+            child: ListView(
+              shrinkWrap: true,
+              physics: const AlwaysScrollableScrollPhysics(),
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(
+                    left: 20.0,
+                    bottom: 5.0,
+                  ),
+                  child: Row(
+                    children: [
+                      Text(
+                        '${getTimeSpecificGreetings()}, $userName',
+                        style: TextStyle(
+                          fontSize: PlayerManager.size.height * 0.04,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Row(
+                  children: [
+                    discoveryCards(
+                      context,
+                      'Discover',
+                      Ionicons.compass,
+                      const DiscoverPage(),
+                    ),
+                    discoveryCards(
+                      context,
+                      'Trending',
+                      Ionicons.trending_up,
+                      const TrendingPage(),
+                    ),
+                  ],
+                ),
+                for (Map contentMap in state.data)
+                  contentMap['type'] == ContentType.songlist
+                      ? TrendingSongsListWidget(
+                          title: contentMap['title'],
+                          trendingSongs: contentMap['list'],
+                        )
+                      : TrendingPlaylistWidget(
+                          title: contentMap['title'],
+                          trendingPlaylists: contentMap['list'],
+                        )
+              ],
+            ),
+          );
         }
+        return Container();
       },
     );
   }
@@ -99,8 +115,8 @@ class ForYouWidget extends StatelessWidget {
   ) {
     return Flexible(
       child: TextButton(
-        onPressed: () => Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const TrendingPage())),
+        onPressed: () => Navigator.push(
+            context, MaterialPageRoute(builder: (context) => targetPage)),
         child: Card(
           child: Padding(
             padding: const EdgeInsets.all(10.0),

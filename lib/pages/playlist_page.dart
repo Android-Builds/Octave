@@ -1,11 +1,13 @@
 import 'package:akar_icons_flutter/akar_icons_flutter.dart';
 import 'package:beats/api/youtube_api.dart';
+import 'package:beats/blocs/api_call_bloc/api_call_bloc.dart';
 import 'package:beats/classes/playlist.dart';
 import 'package:beats/utils/constants.dart';
 import 'package:beats/utils/db_helper.dart';
 import 'package:beats/utils/player_manager.dart';
 import 'package:beats/widgets/playlist_list.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -26,6 +28,7 @@ class PlaylistPage extends StatefulWidget {
 
 class _PlaylistPageState extends State<PlaylistPage> {
   bool isFavourite = false;
+  final ApiCallBloc bloc = ApiCallBloc();
 
   @override
   void initState() {
@@ -109,11 +112,22 @@ class _PlaylistPageState extends State<PlaylistPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: FutureBuilder(
-          future: YtmApi.getPlaylist(widget.playlistId),
-          builder: (BuildContext context, AsyncSnapshot snapshot) {
-            if (snapshot.hasData) {
-              SongPlayList playlist = snapshot.data;
+        body: BlocBuilder<ApiCallBloc, ApiCallBlocState>(
+          bloc: bloc,
+          builder: (context, state) {
+            if (state is ApiCallBlocInitial) {
+              bloc.add(FetchApiWithOneParams(
+                YtmApi.getPlaylist,
+                widget.playlistId,
+              ));
+              return const Center(child: CircularProgressIndicator());
+            } else if (state is ApiCallBlocLaoding) {
+              return SizedBox(
+                height: PlayerManager.size.height * 0.8,
+                child: const Center(child: CircularProgressIndicator()),
+              );
+            } else if (state is ApiCallBlocFinal) {
+              SongPlayList playlist = state.data;
               if (checkifPlaylistExists(widget.playlistId)) {
                 isFavourite = true;
               }
@@ -206,9 +220,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                 body: PlaylistList(playlist: playlist.items),
               );
             } else {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
+              return const Center(child: CircularProgressIndicator());
             }
           },
         ),

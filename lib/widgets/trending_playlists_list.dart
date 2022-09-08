@@ -34,7 +34,7 @@ class TrendingPlaylistWidget extends StatelessWidget {
           ),
         ),
         SizedBox(
-          height: 300.0,
+          height: PlayerManager.size.height * 0.31,
           child: NotificationListener<OverscrollNotification>(
             // Suppress OverscrollNotification events that escape from the inner scrollable
             onNotification: (notification) =>

@@ -14,6 +14,13 @@ import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 import '../classes/trending_songs.dart';
 
+Future getLocation() async {
+  final Response response = await post(
+    Uri.http('ip-api.com', 'json'),
+  );
+  return jsonDecode(response.body)['countryCode'];
+}
+
 enum ContentType {
   playlist,
   songlist,

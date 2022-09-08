@@ -1,7 +1,9 @@
 import 'package:beats/api/youtube_api.dart';
+import 'package:beats/blocs/api_call_bloc/api_call_bloc.dart';
 import 'package:beats/classes/trending_artists.dart';
 import 'package:beats/widgets/song_and_artist_item.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../utils/player_manager.dart';
 
@@ -13,8 +15,10 @@ class TrendingPage extends StatefulWidget {
 }
 
 class _TrendingPageState extends State<TrendingPage> {
-  int _value = 0;
-  String selectedCode = 'ZZ';
+  int _value = 1;
+  static bool first = false;
+  static final ApiCallBloc countryBloc = ApiCallBloc();
+  static final ApiCallBloc trendingByCountryBloc = ApiCallBloc();
 
   @override
   Widget build(BuildContext context) {
@@ -22,14 +26,31 @@ class _TrendingPageState extends State<TrendingPage> {
       appBar: AppBar(title: const Text('Trending')),
       body: ListView(
         children: [
-          SizedBox(
-            height: PlayerManager.size.height * 0.08,
-            child: FutureBuilder(
-              future: YtmApi.getTrendingCountries(),
-              builder: (context, AsyncSnapshot snapshot) {
-                if (snapshot.hasData) {
-                  List<Map<dynamic, dynamic>> countryCodes = snapshot.data;
-                  return NotificationListener<OverscrollNotification>(
+          BlocBuilder<ApiCallBloc, ApiCallBlocState>(
+            bloc: countryBloc,
+            builder: (context, state) {
+              if (state is ApiCallBlocInitial) {
+                countryBloc.add(
+                    const FetchApiWithNoParams(YtmApi.getTrendingCountries));
+                return const SizedBox.shrink();
+              } else if (state is ApiCallBlocLaoding) {
+                return const SizedBox.shrink();
+              } else if (state is ApiCallBlocFinal) {
+                List<Map<dynamic, dynamic>> countryCodes = state.data;
+                for (int i = 0; i < countryCodes.length; i++) {
+                  if (countryCodes[i]['code'] == PlayerManager.countryCode) {
+                    _value = i;
+                    break;
+                  }
+                }
+                if (!first) {
+                  countryCodes.insert(1, countryCodes.removeAt(_value));
+                  _value = 1;
+                  first = true;
+                }
+                return SizedBox(
+                  height: PlayerManager.size.height * 0.08,
+                  child: NotificationListener<OverscrollNotification>(
                     onNotification: (notification) =>
                         notification.metrics.axisDirection !=
                         AxisDirection.down,
@@ -46,24 +67,40 @@ class _TrendingPageState extends State<TrendingPage> {
                           onSelected: (bool selected) {
                             setState(() {
                               _value = selected ? index : 1;
-                              selectedCode = countryCodes[index]['code'];
+                              PlayerManager.countryCode =
+                                  countryCodes[index]['code'];
+                              trendingByCountryBloc.add(FetchApiWithOneParams(
+                                  YtmApi.getTrending,
+                                  PlayerManager.countryCode));
                             });
                           },
                         ),
                       ),
                     ),
-                  );
-                } else {
-                  return const SizedBox.shrink();
-                }
-              },
-            ),
+                  ),
+                );
+              } else {
+                return const SizedBox.shrink();
+              }
+            },
           ),
-          FutureBuilder(
-            future: YtmApi.getTrending(selectedCode),
-            builder: (context, AsyncSnapshot snapshot) {
-              if (snapshot.hasData) {
-                List<Map<dynamic, dynamic>> trendingMap = snapshot.data;
+          BlocBuilder<ApiCallBloc, ApiCallBlocState>(
+            bloc: trendingByCountryBloc,
+            builder: (context, state) {
+              if (state is ApiCallBlocInitial) {
+                trendingByCountryBloc.add(FetchApiWithOneParams(
+                    YtmApi.getTrending, PlayerManager.countryCode));
+                return SizedBox(
+                  height: PlayerManager.size.height * 0.8,
+                  child: const Center(child: CircularProgressIndicator()),
+                );
+              } else if (state is ApiCallBlocLaoding) {
+                return SizedBox(
+                  height: PlayerManager.size.height * 0.7,
+                  child: const Center(child: CircularProgressIndicator()),
+                );
+              } else if (state is ApiCallBlocFinal) {
+                List<Map<dynamic, dynamic>> trendingMap = state.data;
                 return ListView.builder(
                   shrinkWrap: true,
                   itemCount: trendingMap.length,

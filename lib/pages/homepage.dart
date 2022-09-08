@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:audio_service/audio_service.dart';
 import 'package:beats/pages/library.dart';
 import 'package:beats/widgets/for_you_widget.dart';
@@ -12,42 +10,25 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String title = 'Beats';
-    Random random = Random();
-    int highlightTextIndex = random.nextInt(title.length);
-    String initialText =
-        highlightTextIndex == 0 ? '' : title.substring(0, highlightTextIndex);
-    String highlightedText = title[highlightTextIndex];
-    String finalText = highlightTextIndex == title.length - 1
-        ? ''
-        : title.substring(highlightTextIndex + 1);
-
-    bool color = random.nextBool();
-
     return NestedScrollView(
       headerSliverBuilder: (context, innerBoxIsScrolled) {
         return [
           SliverAppBar(
             title: RichText(
               text: TextSpan(
-                text: initialText,
+                text: 'Be',
                 style: DefaultTextStyle.of(context).style.copyWith(
                       fontSize: PlayerManager.size.width * 0.06,
                       fontWeight: FontWeight.bold,
-                      color: color
-                          ? Theme.of(context).colorScheme.primary
-                          : Theme.of(context).textTheme.bodyText1!.color!,
                     ),
                 children: <TextSpan>[
                   TextSpan(
-                    text: highlightedText,
+                    text: 'a',
                     style: TextStyle(
-                      color: color
-                          ? Theme.of(context).textTheme.bodyText1!.color!
-                          : Theme.of(context).colorScheme.primary,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
-                  TextSpan(text: finalText),
+                  const TextSpan(text: 'ts'),
                 ],
               ),
             ),
@@ -73,13 +54,13 @@ class HomePage extends StatelessWidget {
       },
       body: ValueListenableBuilder(
         valueListenable: PlayerManager.navbarIndex,
-        builder: (context, int value, child) => ListView(
-          shrinkWrap: true,
+        builder: (context, int value, child) => Column(
           children: [
-            const <Widget>[
+            Flexible(
+                child: const <Widget>[
               ForYouWidget(),
               Library(),
-            ][value],
+            ][value]),
             StreamBuilder<PlaybackState>(
               stream: PlayerManager.audioHandler.playbackState,
               builder: (context, snapshot) {

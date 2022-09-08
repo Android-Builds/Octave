@@ -9,7 +9,7 @@ class PlaylistItem extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.thumbnail,
-    required this.width,
+    this.width,
     this.titleMaxLine = 2,
     this.subtitleMaxLine = 2,
   }) : super(key: key);
@@ -17,7 +17,7 @@ class PlaylistItem extends StatelessWidget {
   final String title;
   final String subtitle;
   final String thumbnail;
-  final double width;
+  final double? width;
   final int? titleMaxLine;
   final int? subtitleMaxLine;
 
@@ -33,13 +33,13 @@ class PlaylistItem extends StatelessWidget {
             borderRadius: BorderRadius.circular(5.0),
             child: CachedNetworkImage(
               imageUrl: thumbnail,
-              height: width - 20.0,
-              width: width - 20.0,
+              height: width == null ? null : width! - 20.0,
+              width: width == null ? null : width! - 20.0,
             ),
           ),
-          const SizedBox(height: 10.0),
+          const SizedBox(height: 5.0),
           SizedBox(
-            width: width - 20.0,
+            width: width == null ? null : width! - 20.0,
             child: Text(
               title,
               maxLines: titleMaxLine,
@@ -48,9 +48,8 @@ class PlaylistItem extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 5.0),
           SizedBox(
-            width: width - 20.0,
+            width: width == null ? null : width! - 20.0,
             child: Text(
               subtitle,
               maxLines: subtitleMaxLine,
