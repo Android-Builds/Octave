@@ -26,13 +26,20 @@ class TrendingPlaylists {
                 ['browseEndpoint']?['browseId'] ??
             json['musicTwoRowItemRenderer']['navigationEndpoint']
                     ['watchEndpoint']['playlistId']
-                .toString()
-                .substring(2);
+                ?.toString()
+                .substring(2) ??
+            json['musicTwoRowItemRenderer']['menu']['menuRenderer']['items']
+                        .first['menuNavigationItemRenderer']
+                    ['navigationEndpoint']['watchEndpoint']['playlistId'] +
+                ':' +
+                json['musicTwoRowItemRenderer']['menu']['menuRenderer']['items']
+                        .first['menuNavigationItemRenderer']
+                    ['navigationEndpoint']['watchEndpoint']['videoId'];
 
   static List<TrendingPlaylists> getTrendingPlaylists(
       List<dynamic> contentsMap) {
     List<TrendingPlaylists> trendingPlaylists = List<TrendingPlaylists>.from(
-        contentsMap.map((i) => TrendingPlaylists.fromJson(i)));
+        contentsMap.map((json) => TrendingPlaylists.fromJson(json)));
 
     return trendingPlaylists;
   }

@@ -471,10 +471,10 @@ class YoutubeMusicApi {
               ['thumbnail']['thumbnails']
           .last['url'];
       String entityId = element['playlistItemData']?['videoId'] ??
+          element['navigationEndpoint']['browseEndpoint']?['browseId'] ??
           element['overlay']?['musicItemThumbnailOverlayRenderer']['content']
                   ['musicPlayButtonRenderer']['playNavigationEndpoint']
-              ?['watchPlaylistEndpoint']['playlistId'] ??
-          element['navigationEndpoint']['browseEndpoint']?['browseId'];
+              ?['watchPlaylistEndpoint']['playlistId'];
       String playlistId = flexColumnOneMap['navigationEndpoint']
               ?['watchEndpoint']['playlistId'] ??
           "";
@@ -653,9 +653,7 @@ class YoutubeMusicApi {
       body.addAll(extraParams);
     }
 
-    Map<dynamic, dynamic> responseMap = await getResponse(browseLink, body);
-
-    return responseMap;
+    return await getResponse(browseLink, body);
   }
 
   static Future getPlaylistSongs(String playlistId) async {

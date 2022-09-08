@@ -44,17 +44,23 @@ class TrendingPlaylistWidget extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               itemCount: trendingPlaylists.length,
               itemBuilder: (context, index) {
-                return InkWell(
+                return GestureDetector(
                   onTap: () async {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PlaylistPage(
-                          playlistId: trendingPlaylists[index].playlistId,
-                          thumbnail: trendingPlaylists[index].thumbnail,
+                    if (title == 'Recommended music videos') {
+                      List<String> id =
+                          trendingPlaylists[index].playlistId.split(':');
+                      PlayerManager.playMusic(id[1], id[0], title);
+                    } else {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PlaylistPage(
+                            playlistId: trendingPlaylists[index].playlistId,
+                            thumbnail: trendingPlaylists[index].thumbnail,
+                          ),
                         ),
-                      ),
-                    );
+                      );
+                    }
                   },
                   child: PlaylistItem(
                     title: trendingPlaylists[index].title,
