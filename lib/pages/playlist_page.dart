@@ -171,7 +171,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                               };
                               isFavourite = !isFavourite;
                               if (isFavourite) {
-                                checkAndAdd(playlistMap);
+                                checkAndAddFavourite(playlistMap);
                               } else {
                                 checkAndDelete(playlistMap);
                               }

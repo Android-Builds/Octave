@@ -18,6 +18,7 @@ Future<void> main() async {
   await Hive.initFlutter();
   await Hive.openBox('favouritePlaylists');
   await Hive.openBox('importedPlaylists');
+  await Hive.openBox<String>('searchHistory');
   PlayerManager.countryCode = await getLocation();
   // await Hive.openBox('prefs');
   runApp(const MyApp());

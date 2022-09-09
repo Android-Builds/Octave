@@ -7,6 +7,9 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 final _favouritePlaylists = Hive.box('favouritePlaylists');
 final _importedPlaylists = Hive.box('importedPlaylists');
+final _searchHistory = Hive.box<String>('searchHistory');
+
+///Favourite Playlists
 
 getFavouritePlaylists() {}
 
@@ -14,7 +17,7 @@ ValueListenable<Box<dynamic>> favouritePlaylistsListenable() {
   return _favouritePlaylists.listenable();
 }
 
-void addFavouritePlaylist(Map<String, String> playlist) {
+void _addFavouritePlaylist(Map<String, String> playlist) {
   _favouritePlaylists.add(playlist);
 }
 
@@ -28,9 +31,9 @@ bool checkifPlaylistExists(String playlistId) {
   return getExistingPlaylist(playlistId).isNotEmpty;
 }
 
-void checkAndAdd(Map<String, String> playlist) {
+void checkAndAddFavourite(Map<String, String> playlist) {
   if (!checkifPlaylistExists(playlist['playlistId']!)) {
-    addFavouritePlaylist(playlist);
+    _addFavouritePlaylist(playlist);
   }
 }
 
@@ -45,6 +48,10 @@ void checkAndDelete(Map<String, String> playlist) {
     int index = _favouritePlaylists.values.toList().indexOf(existingPlaylist);
     removeFavouritePlaylist(index);
   }
+}
+
+void deleteAllFavouritePlaylists() {
+  _favouritePlaylists.clear();
 }
 
 ///Imported Playlist Section
@@ -69,4 +76,28 @@ Future<void> editPlaylist(int index, LocalPlaylist localPlaylist) async {
 
 ValueListenable<Box<dynamic>> importedPlaylistsListenable() {
   return _importedPlaylists.listenable();
+}
+
+void deleteAllImportedPlaylists() {
+  _importedPlaylists.clear();
+}
+
+///Search history
+
+ValueListenable<Box<dynamic>> searchHistoryListenable() {
+  return _searchHistory.listenable();
+}
+
+void _addSearchHistory(String query) {
+  _searchHistory.add(query);
+}
+
+bool _checkifSearchExists(String query) {
+  return _searchHistory.values.any((element) => element == query);
+}
+
+void checkAndAddSearch(String query) {
+  if (!_checkifSearchExists(query)) {
+    _addSearchHistory(query);
+  }
 }

@@ -3,11 +3,13 @@ import 'package:beats/blocs/search_bloc/search_bloc.dart';
 import 'package:beats/classes/search_result.dart';
 import 'package:beats/pages/artists_page.dart';
 import 'package:beats/pages/playlist_page.dart';
+import 'package:beats/utils/db_helper.dart';
 import 'package:beats/utils/player_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class UniversalSearchDelegate extends SearchDelegate<String> {
   Map urlSearchResultMap = {};
@@ -22,6 +24,7 @@ class UniversalSearchDelegate extends SearchDelegate<String> {
 
   @override
   void showResults(BuildContext context) {
+    checkAndAddSearch(query);
     BlocProvider.of<SearchBloc>(context).add(GetSearchResults(null, query));
     super.showResults(context);
   }
@@ -45,7 +48,16 @@ class UniversalSearchDelegate extends SearchDelegate<String> {
   Widget? buildLeading(BuildContext context) {
     return IconButton(
       onPressed: () {
-        close(context, '');
+        if ((BlocProvider.of<SearchBloc>(context).state as SearchLoaded)
+                .searchResults
+                .first
+                .runtimeType ==
+            SearchResult) {
+          BlocProvider.of<SearchBloc>(context)
+              .add(GetSearchResults(null, query));
+        } else {
+          close(context, '');
+        }
       },
       icon: const Icon(Icons.arrow_back),
     );
@@ -78,13 +90,14 @@ class UniversalSearchDelegate extends SearchDelegate<String> {
           return resultList(state.searchResults);
         } else {
           return Center(
-              child: Column(
-            children: const [
-              Icon(Icons.error),
-              SizedBox(height: 10.0),
-              Text("Error"),
-            ],
-          ));
+            child: Column(
+              children: const [
+                Icon(Icons.error),
+                SizedBox(height: 10.0),
+                Text("Error"),
+              ],
+            ),
+          );
         }
       },
     );
@@ -100,12 +113,6 @@ class UniversalSearchDelegate extends SearchDelegate<String> {
                 children: [
                   ListTile(
                     dense: true,
-                    onTap: () => BlocProvider.of<SearchBloc>(context).add(
-                      GetSearchResults(
-                        searchResults[index]['data'][0].searchType,
-                        query,
-                      ),
-                    ),
                     title: Text(
                       searchResults[index]['type'],
                       style: TextStyle(
@@ -113,7 +120,18 @@ class UniversalSearchDelegate extends SearchDelegate<String> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    trailing: index == 0 ? null : const Text('More'),
+                    trailing: index == 0
+                        ? null
+                        : TextButton(
+                            onPressed: () =>
+                                BlocProvider.of<SearchBloc>(context).add(
+                              GetSearchResults(
+                                searchResults[index]['data'][0].searchType,
+                                query,
+                              ),
+                            ),
+                            child: const Text('More'),
+                          ),
                   ),
                   entityList(searchResults[index]['data'], false),
                 ],
@@ -190,7 +208,21 @@ class UniversalSearchDelegate extends SearchDelegate<String> {
   @override
   Widget buildSuggestions(BuildContext context) {
     return query.isEmpty
-        ? const SizedBox.shrink()
+        ? ValueListenableBuilder(
+            valueListenable: searchHistoryListenable(),
+            builder: (context, Box seachHistoryBox, _) {
+              return ListView.builder(
+                itemCount: seachHistoryBox.length,
+                itemBuilder: (context, index) => ListTile(
+                  onTap: () {
+                    query = seachHistoryBox.get(index);
+                    showResults(context);
+                  },
+                  title: Text(seachHistoryBox.get(index)),
+                  trailing: const Icon(Icons.history),
+                ),
+              );
+            })
         : FutureBuilder(
             future: PlayerManager.getSearchSuggestions(query),
             builder: (context, AsyncSnapshot snapshot) {

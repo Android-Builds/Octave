@@ -997,7 +997,7 @@ class YtmApi {
   /// Searh methods
   static Future<List<dynamic>> getSearchResults(String searchQuery,
           [SearchType? searchType]) =>
-      YoutubeMusicApi.getSearchResults(searchQuery);
+      YoutubeMusicApi.getSearchResults(searchQuery, searchType);
 
   static Future getSearchSuggestions(String searchQuery) =>
       YoutubeMusicApi.getSearchSuggestions(searchQuery);

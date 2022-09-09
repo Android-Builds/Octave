@@ -1,4 +1,5 @@
 import 'package:beats/pages/local_playlist_list.dart';
+import 'package:beats/utils/db_helper.dart';
 import 'package:flutter/material.dart';
 
 class MyPlaylists extends StatelessWidget {
@@ -8,7 +9,13 @@ class MyPlaylists extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Favourite Playlists'),
+        title: const Text('Imported Playlists'),
+        actions: const [
+          IconButton(
+            onPressed: deleteAllImportedPlaylists,
+            icon: Icon(Icons.delete),
+          ),
+        ],
       ),
       body: const LocalPlaylistList(),
     );
