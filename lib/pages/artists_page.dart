@@ -1,9 +1,11 @@
 import 'package:beats/api/youtube_api.dart';
+import 'package:beats/blocs/api_call_bloc/api_call_bloc.dart';
 import 'package:beats/classes/artist.dart';
 import 'package:beats/classes/search_result.dart';
 import 'package:beats/utils/player_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ArtistsPage extends StatefulWidget {
   const ArtistsPage({
@@ -24,17 +26,31 @@ class ArtistsPage extends StatefulWidget {
 class _ArtistsPageState extends State<ArtistsPage> {
   bool isExpanded = false;
 
+  final ApiCallBloc bloc = ApiCallBloc();
+
   @override
   Widget build(BuildContext context) {
+    final size = PlayerManager.size.width * 0.05;
     return Scaffold(
       appBar: AppBar(
         actions: [IconButton(onPressed: () {}, icon: const Icon(Icons.launch))],
       ),
-      body: FutureBuilder(
-        future: YtmApi.getArtist(widget.artistId),
-        builder: (context, AsyncSnapshot snapshot) {
-          if (snapshot.hasData) {
-            Artist artist = snapshot.data;
+      body: BlocBuilder<ApiCallBloc, ApiCallBlocState>(
+        bloc: bloc,
+        builder: (context, state) {
+          if (state is ApiCallBlocInitial) {
+            bloc.add(FetchApiWithOneParams(
+              YtmApi.getArtist,
+              widget.artistId,
+            ));
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is ApiCallBlocLaoding) {
+            return SizedBox(
+              height: PlayerManager.size.height * 0.8,
+              child: const Center(child: CircularProgressIndicator()),
+            );
+          } else if (state is ApiCallBlocFinal) {
+            Artist artist = state.data;
             return ListView(
               padding: const EdgeInsets.all(10.0),
               children: [
@@ -131,8 +147,15 @@ class _ArtistsPageState extends State<ArtistsPage> {
               ],
             );
           } else {
-            return const Center(
-              child: CircularProgressIndicator(),
+            return Column(
+              children: [
+                Icon(Icons.error, size: size * 1.5),
+                const SizedBox(height: 20.0),
+                Text(
+                  'Error Loading Playlist',
+                  style: TextStyle(fontSize: size),
+                ),
+              ],
             );
           }
         },

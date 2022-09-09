@@ -110,6 +110,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
 
   @override
   Widget build(BuildContext context) {
+    final size = PlayerManager.size.width * 0.05;
     return SafeArea(
       child: Scaffold(
         body: BlocBuilder<ApiCallBloc, ApiCallBlocState>(
@@ -122,10 +123,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
               ));
               return const Center(child: CircularProgressIndicator());
             } else if (state is ApiCallBlocLaoding) {
-              return SizedBox(
-                height: PlayerManager.size.height * 0.8,
-                child: const Center(child: CircularProgressIndicator()),
-              );
+              return const Center(child: CircularProgressIndicator());
             } else if (state is ApiCallBlocFinal) {
               SongPlayList playlist = state.data;
               if (checkifPlaylistExists(widget.playlistId)) {
@@ -220,7 +218,16 @@ class _PlaylistPageState extends State<PlaylistPage> {
                 body: PlaylistList(playlist: playlist.items),
               );
             } else {
-              return const Center(child: CircularProgressIndicator());
+              return Column(
+                children: [
+                  Icon(Icons.error, size: size * 1.5),
+                  const SizedBox(height: 20.0),
+                  Text(
+                    'Error Loading Playlist',
+                    style: TextStyle(fontSize: size),
+                  ),
+                ],
+              );
             }
           },
         ),

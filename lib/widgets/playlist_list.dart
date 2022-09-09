@@ -152,10 +152,15 @@ class _PlaylistListState extends State<PlaylistList> {
               const SizedBox(height: 50.0),
               ListTile(
                 dense: true,
-                leading: const Icon(Icons.import_export),
-                onTap: () async {},
+                leading: const Icon(Icons.playlist_play),
+                onTap: () async {
+                  int mediaIndex = PlayerManager.audioHandler.queue.value
+                      .indexOf(PlayerManager.audioHandler.mediaItem.value!);
+                  PlayerManager.audioHandler
+                      .insertQueueItem(mediaIndex + 1, mediaItem);
+                },
                 title: Text(
-                  'Import',
+                  'Play Next',
                   style: menuStyle,
                 ),
               ),
