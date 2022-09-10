@@ -24,6 +24,8 @@ class PlayerManager {
 
   static ValueNotifier<int> navbarIndex = ValueNotifier(0);
 
+  static final ValueNotifier<bool> _lyricsAvailable = ValueNotifier(true);
+
   static final ValueNotifier<double> _playerExpandProgress =
       ValueNotifier(kBottomNavigationBarHeight * 1.2);
 
@@ -45,6 +47,8 @@ class PlayerManager {
   static AudioPlayerHandler get audioHandler => _audioHandler;
 
   static PanelController get panelController => _panelController;
+
+  static ValueNotifier<bool> get lyricsAvailable => _lyricsAvailable;
 
   static Stream<Duration> get _bufferedPositionStream =>
       PlayerManager.audioHandler.playbackState
@@ -103,6 +107,7 @@ class PlayerManager {
     String playlistId,
     String playlistName,
   ) async {
+    int index = 0;
     if (_audioHandler.queue.value.isNotEmpty &&
         _audioHandler.mediaItem.value!.id == musicId) {
       _miniplayerController.animateToHeight(state: mp.PanelState.MAX);
@@ -112,9 +117,13 @@ class PlayerManager {
       List<MediaItem> items = [];
       if (playlistId.isNotEmpty) {
         items = await YtmApi.getQueue(playlistId);
+        index = items.indexWhere((element) => element.id == song.id);
+        if (index == -1) {
+          items.insert(0, song);
+          index = 0;
+        }
       }
-      items.insert(0, song);
-      await addToPlaylistAndPlay(items);
+      await addToPlaylistAndPlay(items, index);
       //panelController.open();
     }
   }

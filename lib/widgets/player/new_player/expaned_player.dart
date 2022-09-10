@@ -68,95 +68,102 @@ class ExpandedPlayer extends StatelessWidget {
         ) /
         2;
 
-    return Container(
-      color: Theme.of(context).colorScheme.background,
-      child: Stack(
-        children: [
-          Column(
+    bool isOpen = false;
+
+    return StatefulBuilder(builder: (context, setState) {
+      return GestureDetector(
+        onVerticalDragDown: isOpen ? (details) {} : null,
+        child: Container(
+          color: Theme.of(context).colorScheme.background,
+          child: Stack(
             children: [
-              Flexible(
-                fit: FlexFit.loose,
-                child: SizedBox(
-                  height: kToolbarHeight * 1.5,
-                  child: AppBar(
-                    centerTitle: true,
-                    leading: IconButton(
-                      onPressed: () {
-                        PlayerManager.miniplayerController.animateToHeight(
-                          state: mp.PanelState.MIN,
-                        );
-                      },
-                      icon: const Icon(Icons.keyboard_arrow_down),
-                    ),
-                    title: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Playing From',
-                          style: TextStyle(
-                              fontSize: PlayerManager.size.width * 0.04),
+              Column(
+                children: [
+                  Flexible(
+                    fit: FlexFit.loose,
+                    child: SizedBox(
+                      height: kToolbarHeight * 1.5,
+                      child: AppBar(
+                        centerTitle: true,
+                        leading: IconButton(
+                          onPressed: () {
+                            PlayerManager.miniplayerController.animateToHeight(
+                              state: mp.PanelState.MIN,
+                            );
+                          },
+                          icon: const Icon(Icons.keyboard_arrow_down),
                         ),
-                        Text(
-                          mediaItem.album!.isNotEmpty
-                              ? mediaItem.album
-                              : mediaItem.extras!['playlist'] ?? "",
-                          style: TextStyle(
-                            fontSize: PlayerManager.size.width * 0.03,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ],
-                    ),
-                    actions: [
-                      IconButton(
-                        onPressed: () => showMenu(context),
-                        icon: const Icon(Icons.more_vert),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    left: paddingLeft,
-                    top: paddingVertical,
-                    bottom: paddingVertical,
-                  ),
-                  child: PlayerImage(
-                    imageSize: imageSize,
-                    mediaItem: mediaItem,
-                  ),
-                ),
-              ),
-              Expanded(
-                flex: 4,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 30),
-                  child: Opacity(
-                    opacity: opacity,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Flexible(child: SizedBox(height: 20)),
-                        Flexible(
-                          child: MarqueeWidget(
-                            child: Text(
-                              mediaItem.title,
+                        title: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Playing From',
                               style: TextStyle(
-                                fontSize: PlayerManager.size.width * 0.06,
+                                  fontSize: PlayerManager.size.width * 0.04),
+                            ),
+                            Text(
+                              mediaItem.album!.isNotEmpty
+                                  ? mediaItem.album
+                                  : mediaItem.extras!['playlist'] ?? "",
+                              style: TextStyle(
+                                fontSize: PlayerManager.size.width * 0.03,
                                 fontWeight: FontWeight.bold,
+                                color: Colors.grey,
                               ),
                             ),
-                          ),
+                          ],
                         ),
-                        Flexible(
-                          child: Text(
-                            mediaItem.artist ?? mediaItem.album ?? "",
-                            style:
-                                Theme.of(context).textTheme.bodyText2!.copyWith(
+                        actions: [
+                          IconButton(
+                            onPressed: () => showMenu(context),
+                            icon: const Icon(Icons.more_vert),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                        left: paddingLeft,
+                        top: paddingVertical,
+                        bottom: paddingVertical,
+                      ),
+                      child: PlayerImage(
+                        imageSize: imageSize,
+                        mediaItem: mediaItem,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 4,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 30),
+                      child: Opacity(
+                        opacity: opacity,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Flexible(child: SizedBox(height: 20)),
+                            Flexible(
+                              child: MarqueeWidget(
+                                child: Text(
+                                  mediaItem.title,
+                                  style: TextStyle(
+                                    fontSize: PlayerManager.size.width * 0.06,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Flexible(
+                              child: Text(
+                                mediaItem.artist ?? mediaItem.album ?? "",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyText2!
+                                    .copyWith(
                                       fontSize: PlayerManager.size.width * 0.04,
                                       fontWeight: FontWeight.w500,
                                       color: Theme.of(context)
@@ -165,51 +172,58 @@ class ExpandedPlayer extends StatelessWidget {
                                           .color!
                                           .withOpacity(0.55),
                                     ),
-                          ),
-                        ),
-                        Flexible(
-                          flex: 2,
-                          child: Opacity(
-                            opacity: opacity,
-                            child: SeekBar(
-                              duration: positionData.duration,
-                              position: positionData.position,
-                              bufferedPosition: positionData.bufferedPosition,
-                              onChangeEnd: (newPosition) {
-                                PlayerManager.audioHandler.seek(newPosition);
-                              },
+                              ),
                             ),
-                          ),
-                        ),
-                        Flexible(
-                          flex: 2,
-                          child: Opacity(
-                            opacity: opacity,
-                            child: ControlButtons(
-                              PlayerManager.audioHandler,
+                            Flexible(
+                              flex: 2,
+                              child: Opacity(
+                                opacity: opacity,
+                                child: SeekBar(
+                                  duration: positionData.duration,
+                                  position: positionData.position,
+                                  bufferedPosition:
+                                      positionData.bufferedPosition,
+                                  onChangeEnd: (newPosition) {
+                                    PlayerManager.audioHandler
+                                        .seek(newPosition);
+                                  },
+                                ),
+                              ),
                             ),
-                          ),
+                            Flexible(
+                              flex: 2,
+                              child: Opacity(
+                                opacity: opacity,
+                                child: ControlButtons(
+                                  PlayerManager.audioHandler,
+                                ),
+                              ),
+                            ),
+                            const Flexible(
+                              flex: 2,
+                              child: SizedBox.expand(),
+                            )
+                          ],
                         ),
-                        const Flexible(
-                          flex: 2,
-                          child: SizedBox.expand(),
-                        )
-                      ],
+                      ),
                     ),
                   ),
+                ],
+              ),
+              Opacity(
+                opacity: sheetOpacity,
+                child: PlayerBottomSheet(
+                  isOpen: (value) {
+                    setState(() => isOpen = value);
+                  },
+                  mediaItem: mediaItem,
                 ),
               ),
             ],
           ),
-          Opacity(
-            opacity: sheetOpacity,
-            child: PlayerBottomSheet(
-              mediaItem: mediaItem,
-            ),
-          ),
-        ],
-      ),
-    );
+        ),
+      );
+    });
   }
 
   Future<void> showMenu(BuildContext context) async {

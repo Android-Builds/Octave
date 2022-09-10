@@ -159,12 +159,15 @@ class YoutubeMusicApi {
     return stream;
   }
 
-  static List<Map<String, Object>> parseHomePageResponseData(Map contentsMap) {
+  static List<List<Map<String, Object>>> parseHomePageResponseData(
+      Map contentsMap) {
     List<TrendingPlaylists> trendingPlaylists = [];
     List<TrendingSong> trendingSongs = [];
     String header = '';
     Map<String, Object> playlistMap = {};
     Map<String, Object> songlistMap = {};
+    List<Map<String, Object>> playlistMapList = [];
+    List<Map<String, Object>> songlistMapList = [];
 
     for (var content in (contentsMap['contents'] as List)) {
       if ((content.values.first as Map).containsKey('contents')) {
@@ -173,7 +176,6 @@ class YoutubeMusicApi {
             ['text'];
         switch (content.values.first['contents'][0].keys.first) {
           case 'musicTwoRowItemRenderer': //playlist
-            //print();
             trendingPlaylists = TrendingPlaylists.getTrendingPlaylists(
                 content.values.first['contents']);
             playlistMap = {
@@ -181,9 +183,9 @@ class YoutubeMusicApi {
               'list': trendingPlaylists,
               'type': ContentType.playlist
             };
+            playlistMapList.add(playlistMap);
             break;
           case 'musicResponsiveListItemRenderer': //songlist
-            // print(content.values.first['header']['']);
             trendingSongs = TrendingSong.getTrendingSongsList(
                 content.values.first['contents']);
             songlistMap = {
@@ -191,13 +193,14 @@ class YoutubeMusicApi {
               'list': trendingSongs,
               'type': ContentType.songlist
             };
+            songlistMapList.add(songlistMap);
             break;
           default:
             log('Can\'t parse the item');
         }
       }
     }
-    return [songlistMap, playlistMap];
+    return [songlistMapList, playlistMapList];
   }
 
   static Future<Map> getResponse(Uri link, Object body) async {
@@ -227,9 +230,9 @@ class YoutubeMusicApi {
       _body['context']!['client']['visitorData'] = visitorData;
     }
 
-    List<Map<String, Object>> parsedData = [];
+    List<List<Map<String, Object>>> parsedData = [];
 
-    Map responseMap = await getResponse(nextLink, _body);
+    responseMap = await getResponse(nextLink, _body);
     if (responseMap['continuationContents'] != null) {
       if (!homepage &&
           (responseMap['continuationContents'] as Map)
@@ -248,7 +251,7 @@ class YoutubeMusicApi {
       }
     }
 
-    return homepage ? parsedData : {};
+    return parsedData;
   }
 
   static Future<List<Map<String, Object>>> getHomePage() async {
@@ -269,16 +272,22 @@ class YoutubeMusicApi {
     continuation =
         contentsMap['continuations'][0]['nextContinuationData']['continuation'];
 
-    List<Map<String, Object>> data = parseHomePageResponseData(contentsMap);
+    List<List<Map<String, Object>>> data =
+        parseHomePageResponseData(contentsMap);
     List<Map<String, Object>> parsedData = [];
-    parsedData.addAll(data);
 
-    while ((data = await getContinuationData()).isNotEmpty) {
-      parsedData.addAll(data);
+    for (var element in data) {
+      parsedData.addAll(element);
     }
 
-    parsedData.removeWhere((element) => element.isEmpty);
-    parsedData.insert(1, parsedData.removeAt(0));
+    while ((data = await getContinuationData()).isNotEmpty) {
+      for (var element in data) {
+        parsedData.addAll(element);
+      }
+    }
+
+    // parsedData.removeWhere((element) => element.isEmpty);
+    // parsedData.insert(1, parsedData.removeAt(0));
     return parsedData;
   }
 
@@ -590,11 +599,9 @@ class YoutubeMusicApi {
 
     Map responseMap = await resolveUrl(url);
 
-    //log(responseMap.toString());
     if (searchType == SearchType.songs) {
       browseId = responseMap['endpoint']['watchEndpoint']['videoId'];
       responseMap = await requestPlayerData(browseId);
-      log(responseMap['videoDetails'].keys.toString());
       title = responseMap['videoDetails']['title'];
       subtitle = '${responseMap['videoDetails']['author']} '
           '${PlayerManager.parsedDuration(Duration(seconds: int.parse(responseMap['videoDetails']['lengthSeconds'])))}';
@@ -603,7 +610,6 @@ class YoutubeMusicApi {
     } else {
       browseId = responseMap['endpoint']['browseEndpoint']['browseId'];
       responseMap = await browse(browseId);
-      //log(responseMap.toString());
       if (searchType == SearchType.playlists) {
         title = mapToText(
             responseMap['header']['musicDetailHeaderRenderer']['title']);
@@ -683,9 +689,7 @@ class YoutubeMusicApi {
       body: json.encode(body),
     );
 
-    log(response.body);
-
-    return 1;
+    return response;
   }
 
   static Future getSongDetails2(String playlistId, String songId) async {
@@ -716,8 +720,6 @@ class YoutubeMusicApi {
       body: json.encode(body),
     );
 
-    //log(response.body);
-
     return response;
   }
 
@@ -747,43 +749,45 @@ class YoutubeMusicApi {
 
     for (var song in songQueue) {
       song = song['content']['playlistPanelVideoRenderer'];
-      Iterable menuItems = (song['menu']['menuRenderer']['items'] as List)
-          .where((element) => element.containsKey('menuNavigationItemRenderer'))
-          .toList()
-          .where((element) =>
-              mapToText(element['menuNavigationItemRenderer']['text']) ==
-              'Go to album');
-      List<String> time = song['lengthText']['runs'][0]['text'].split(':');
-      songs.add(
-        MediaItem(
-          id: song['videoId'],
-          title: song['title']['runs'][0]['text'],
-          artist: (song['shortBylineText']['runs'] as List)
-              .map((e) => e['text'])
-              .toList()
-              .join(),
-          album: (song['longBylineText']['runs'] as List)
-              .map((e) => e['text'])
-              .toList()
-              .join()
-              .split('•')[1]
-              .trim(),
-          duration: Duration(
-            minutes: int.parse(time[0]),
-            seconds: int.parse(time[1]),
+      if ((song as Map).containsKey('menu')) {
+        Iterable menuItems = (song['menu']['menuRenderer']['items'] as List)
+            .where(
+                (element) => element.containsKey('menuNavigationItemRenderer'))
+            .toList()
+            .where((element) =>
+                mapToText(element['menuNavigationItemRenderer']['text']) ==
+                'Go to album');
+        List<String> time = song['lengthText']['runs'][0]['text'].split(':');
+        songs.add(
+          MediaItem(
+            id: song['videoId'],
+            title: song['title']['runs'][0]['text'],
+            artist: (song['shortBylineText']['runs'] as List)
+                .map((e) => e['text'])
+                .toList()
+                .join(),
+            album: (song['longBylineText']['runs'] as List)
+                .map((e) => e['text'])
+                .toList()
+                .join()
+                .split('•')[1]
+                .trim(),
+            duration: Duration(
+              minutes: int.parse(time[0]),
+              seconds: int.parse(time[1]),
+            ),
+            artUri: Uri.parse(song['thumbnail']['thumbnails'].last['url']),
+            extras: {
+              'playlistId': playlistId,
+              'albumId': menuItems.isEmpty
+                  ? ''
+                  : menuItems.first['menuNavigationItemRenderer']
+                      ['navigationEndpoint']['browseEndpoint']['browseId'],
+            },
           ),
-          artUri: Uri.parse(song['thumbnail']['thumbnails'].last['url']),
-          extras: {
-            'playlistId': playlistId,
-            'albumId': menuItems.isEmpty
-                ? ''
-                : menuItems.first['menuNavigationItemRenderer']
-                    ['navigationEndpoint']['browseEndpoint']['browseId'],
-          },
-        ),
-      );
+        );
+      }
     }
-
     return songs;
   }
 
@@ -909,7 +913,8 @@ class YoutubeMusicApi {
         playlistBrowseId, about);
   }
 
-  static Future getNext(String playlistId, String musicId) async {
+  static Future<Map<dynamic, dynamic>> getNext(
+      String playlistId, String musicId) async {
     /*
      * watchEndpointMusicSupportedConfigs: {watchEndpointMusicConfig: {musicVideoType: "MUSIC_VIDEO_TYPE_UGC"}}
      */
@@ -975,6 +980,11 @@ class YtmApi {
   /// Browse
   static Future<Map<dynamic, dynamic>> browse(String browseId) =>
       YoutubeMusicApi.browse(browseId);
+
+  ///Next
+  static Future<Map<dynamic, dynamic>> getNext(
+          String playlistId, String musicId) =>
+      YoutubeMusicApi.getNext(playlistId, musicId);
 
   /// HomePage and Discovery
   static Future<List<Map<String, Object>>> getHomePage() =>

@@ -17,5 +17,5 @@ class ApiCallBlocFinal extends ApiCallBlocState {
   const ApiCallBlocFinal(this.data);
 
   @override
-  List<Object> get props => data;
+  List<Object> get props => [data];
 }

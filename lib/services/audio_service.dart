@@ -3,6 +3,7 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:beats/api/youtube_api.dart';
+import 'package:beats/utils/player_manager.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -162,6 +163,8 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
       }
     });
 
+    _player.currentIndexStream.listen(updateLyricsAvialability);
+
     _effectiveSequence
         .map((sequence) =>
             sequence.map((source) => _mediaItemExpando[source]!).toList())
@@ -169,6 +172,23 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
 
     _playlist.addAll(queue.value.map(_itemToSource).toList());
     await _player.setAudioSource(_playlist, preload: false);
+  }
+
+  void updateLyricsAvialability(int? index) async {
+    if (index == null ||
+        _player.playerState.processingState == ProcessingState.idle) {
+      return;
+    }
+    Map<dynamic, dynamic> browseMap = await YtmApi.getNext(
+      queue.value[index].extras!['playlistId'],
+      queue.value[index].id,
+    );
+    bool isNotAvailable = browseMap['contents']
+                    ['singleColumnMusicWatchNextResultsRenderer']
+                ['tabbedRenderer']['watchNextTabbedResultsRenderer']['tabs'][1]
+            ['tabRenderer']['unselectable'] ??
+        false;
+    PlayerManager.lyricsAvailable.value = !isNotAvailable;
   }
 
   AudioSource _itemToSource(MediaItem mediaItem) {

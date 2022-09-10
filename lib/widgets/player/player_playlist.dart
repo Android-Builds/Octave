@@ -6,14 +6,12 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 import '../../services/audio_service.dart';
 import '../../utils/player_manager.dart';
 
-class Playlist extends StatelessWidget {
-  const Playlist({
+class PlayerPlaylist extends StatelessWidget {
+  const PlayerPlaylist({
     Key? key,
-    required this.scrollController,
     required this.panelController,
   }) : super(key: key);
 
-  final ScrollController scrollController;
   final PanelController panelController;
 
   @override
@@ -24,7 +22,7 @@ class Playlist extends StatelessWidget {
         final queueState = snapshot.data ?? QueueState.empty;
         final queue = queueState.queue;
         return ReorderableListView(
-          scrollController: scrollController,
+          buildDefaultDragHandles: false,
           shrinkWrap: true,
           onReorder: (int oldIndex, int newIndex) {
             if (oldIndex < newIndex) newIndex--;
@@ -59,6 +57,7 @@ class Playlist extends StatelessWidget {
                             imageUrl: queue[i].artUri.toString(),
                             height: 55.0,
                             width: 55.0,
+                            fit: BoxFit.cover,
                           ),
                         ),
                         i == queueState.queueIndex
@@ -86,9 +85,9 @@ class Playlist extends StatelessWidget {
                             ' \u2022 ${PlayerManager.parsedDuration(queue[i].duration!)}'),
                       ],
                     ),
-                    trailing: IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.more_vert),
+                    trailing: ReorderableDragStartListener(
+                      index: i,
+                      child: const Icon(Icons.drag_handle),
                     ),
                     onTap: () {
                       if (i == queueState.queueIndex) {
