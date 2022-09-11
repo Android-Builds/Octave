@@ -251,7 +251,7 @@ class YoutubeMusicApi {
       }
     }
 
-    return parsedData;
+    return homepage ? parsedData : {};
   }
 
   static Future<List<Map<String, Object>>> getHomePage() async {

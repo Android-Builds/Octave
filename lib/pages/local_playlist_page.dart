@@ -2,7 +2,7 @@ import 'package:beats/classes/local_playlist.dart';
 import 'package:beats/utils/player_manager.dart';
 import 'package:beats/utils/utility.dart';
 import 'package:beats/widgets/collage.dart';
-import 'package:beats/widgets/playlist_list.dart';
+import 'package:beats/widgets/playlist_song_list.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 
@@ -99,7 +99,7 @@ class _LocalPlaylistPageState extends State<LocalPlaylistPage> {
               )
             ],
           ),
-          PlaylistList(
+          PlaylistSongList(
             playlist: widget.playlist.songs,
             playlistIndex: widget.index,
           ),

@@ -10,20 +10,20 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 
-class PlaylistList extends StatefulWidget {
+class PlaylistSongList extends StatefulWidget {
   final List<MediaItem> playlist;
   final int? playlistIndex;
-  const PlaylistList({
+  const PlaylistSongList({
     Key? key,
     required this.playlist,
     this.playlistIndex,
   }) : super(key: key);
 
   @override
-  State<PlaylistList> createState() => _PlaylistListState();
+  State<PlaylistSongList> createState() => _PlaylistSongListState();
 }
 
-class _PlaylistListState extends State<PlaylistList> {
+class _PlaylistSongListState extends State<PlaylistSongList> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
@@ -60,6 +60,11 @@ class _PlaylistListState extends State<PlaylistList> {
           ),
           trailing: IconButton(
             icon: const Icon(Icons.more_vert),
+            // onPressed: () => Navigator.push(
+            //     context,
+            //     MaterialPageRoute(
+            //       builder: (context) => PlaylistMenuPage(),
+            //     )),
             onPressed: () => showMenu(index, context, widget.playlist[index]),
           ),
         );
@@ -99,6 +104,7 @@ class _PlaylistListState extends State<PlaylistList> {
       isScrollControlled: true,
       enableDrag: true,
       context: context,
+      useRootNavigator: true,
       backgroundColor: Theme.of(context).colorScheme.background,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
@@ -108,12 +114,12 @@ class _PlaylistListState extends State<PlaylistList> {
       ),
       builder: (BuildContext context) {
         return Padding(
-          padding: const EdgeInsets.only(
-            top: 10.0,
-            right: 5.0,
-            left: 5.0,
+          padding: const EdgeInsets.symmetric(
+            vertical: 10.0,
+            horizontal: 5.0,
           ),
           child: Wrap(
+            //shrinkWrap: true,
             alignment: WrapAlignment.center,
             children: [
               Container(
@@ -260,6 +266,7 @@ class _PlaylistListState extends State<PlaylistList> {
       isScrollControlled: true,
       enableDrag: true,
       context: context,
+      useRootNavigator: true,
       backgroundColor: Theme.of(context).colorScheme.background,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(

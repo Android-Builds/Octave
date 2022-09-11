@@ -5,7 +5,7 @@ import 'package:beats/classes/playlist.dart';
 import 'package:beats/utils/constants.dart';
 import 'package:beats/utils/db_helper.dart';
 import 'package:beats/utils/player_manager.dart';
-import 'package:beats/widgets/playlist_list.dart';
+import 'package:beats/widgets/playlist_song_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ionicons/ionicons.dart';
@@ -40,12 +40,14 @@ class _PlaylistPageState extends State<PlaylistPage> {
 
   Future<void> showMenu(SongPlayList playlist) async {
     TextStyle menuStyle = TextStyle(
-      fontSize: PlayerManager.size.width * 0.035,
+      fontSize: PlayerManager.size.width * 0.04,
+      fontWeight: FontWeight.bold,
     );
     showModalBottomSheet<void>(
       isScrollControlled: true,
       enableDrag: true,
       context: context,
+      useRootNavigator: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(10.0),
@@ -54,22 +56,12 @@ class _PlaylistPageState extends State<PlaylistPage> {
       ),
       builder: (BuildContext context) {
         return Padding(
-          padding: const EdgeInsets.only(
-            top: 10.0,
-            right: 5.0,
-            left: 5.0,
+          padding: const EdgeInsets.symmetric(
+            vertical: 10.0,
+            horizontal: 5.0,
           ),
           child: Wrap(
             children: [
-              ListTile(
-                dense: true,
-                leading: const Icon(Icons.playlist_add),
-                onTap: () {},
-                title: Text(
-                  'Add to queue',
-                  style: menuStyle,
-                ),
-              ),
               ListTile(
                 dense: true,
                 leading: const Icon(Icons.import_export),
@@ -85,6 +77,19 @@ class _PlaylistPageState extends State<PlaylistPage> {
                 },
                 title: Text(
                   'Import',
+                  style: menuStyle,
+                ),
+              ),
+              ListTile(
+                dense: true,
+                leading: const Icon(Icons.playlist_add),
+                onTap: () {
+                  PlayerManager.audioHandler.addQueueItems(playlist.items).then(
+                      (value) => ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Added to Queue'))));
+                },
+                title: Text(
+                  'Add to queue',
                   style: menuStyle,
                 ),
               ),
@@ -195,7 +200,11 @@ class _PlaylistPageState extends State<PlaylistPage> {
                               shape: const CircleBorder(),
                               padding: const EdgeInsets.all(20),
                             ),
-                            onPressed: () {},
+                            onPressed: () {
+                              playlist.items.shuffle();
+                              PlayerManager.addToPlaylistAndPlay(
+                                  playlist.items);
+                            },
                             child: const Icon(Ionicons.shuffle),
                           ),
                         ],
@@ -215,7 +224,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                     ),
                   ];
                 },
-                body: PlaylistList(playlist: playlist.items),
+                body: PlaylistSongList(playlist: playlist.items),
               );
             } else {
               return Column(

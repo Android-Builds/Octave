@@ -133,7 +133,7 @@ class MyDelegate extends SliverPersistentHeaderDelegate {
   }
 
   @override
-  double get maxExtent => PlayerManager.size.height * 0.6;
+  double get maxExtent => PlayerManager.size.height * 0.62;
 
   @override
   double get minExtent => kToolbarHeight * 1.5;

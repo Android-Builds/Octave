@@ -1,6 +1,6 @@
-import 'package:audio_service/audio_service.dart';
 import 'package:beats/pages/library.dart';
 import 'package:beats/widgets/for_you_widget.dart';
+import 'package:beats/widgets/miniplayer_bottom_padder.dart';
 import 'package:flutter/material.dart';
 import '../classes/universal_search_delegate.dart';
 import '../utils/player_manager.dart';
@@ -61,17 +61,7 @@ class HomePage extends StatelessWidget {
               ForYouWidget(),
               Library(),
             ][value]),
-            StreamBuilder<PlaybackState>(
-              stream: PlayerManager.audioHandler.playbackState,
-              builder: (context, snapshot) {
-                final playbackState = snapshot.data;
-                final stopped =
-                    playbackState?.processingState == AudioProcessingState.idle;
-                return SizedBox(
-                  height: stopped ? 0 : kBottomNavigationBarHeight,
-                );
-              },
-            ),
+            const MiniPlayerBottomPadder(),
           ],
         ),
       ),
