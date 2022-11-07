@@ -201,9 +201,9 @@ class _PlaylistPageState extends State<PlaylistPage> {
                               padding: const EdgeInsets.all(20),
                             ),
                             onPressed: () {
-                              playlist.items.shuffle();
+                              var list = playlist.items;
                               PlayerManager.addToPlaylistAndPlay(
-                                  playlist.items);
+                                  list..shuffle());
                             },
                             child: const Icon(Ionicons.shuffle),
                           ),

@@ -12,6 +12,8 @@ import 'package:rxdart/rxdart.dart';
 
 import 'package:miniplayer/miniplayer.dart' as mp;
 
+import 'db_helper.dart';
+
 class PlayerManager {
   static late Size size;
   static bool homePage = true;
@@ -128,8 +130,19 @@ class PlayerManager {
     }
   }
 
+  static _addToHistory(MediaItem item) {
+    Map songHistoryMap = {};
+    songHistoryMap['id'] = item.id;
+    songHistoryMap['title'] = item.title;
+    songHistoryMap['album'] = item.album;
+    songHistoryMap['thumbnail'] = item.artUri.toString();
+    songHistoryMap['time'] = DateTime.now();
+    checkAndAddPlayHistory(songHistoryMap);
+  }
+
   static Future<void> addToPlaylistAndPlay(List<MediaItem> items,
       [int? index]) async {
+    _addToHistory(items[index ?? 0]);
     await _audioHandler.updateQueue(items);
     await _audioHandler.skipToQueueItem(index ?? 0);
     await _audioHandler.play();

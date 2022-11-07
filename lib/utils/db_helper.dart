@@ -8,6 +8,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 final _favouritePlaylists = Hive.box('favouritePlaylists');
 final _importedPlaylists = Hive.box('importedPlaylists');
 final _searchHistory = Hive.box<String>('searchHistory');
+final _playHistory = Hive.box('playHistory');
 
 ///Favourite Playlists
 
@@ -99,5 +100,36 @@ bool _checkifSearchExists(String query) {
 void checkAndAddSearch(String query) {
   if (!_checkifSearchExists(query)) {
     _addSearchHistory(query);
+  }
+}
+
+///Play History
+
+ValueListenable<Box<dynamic>> searchPlayHistoryListenable() {
+  return _playHistory.listenable();
+}
+
+void _addPlayHistory(Map historyMap) {
+  _playHistory.add(historyMap);
+}
+
+int _checkAndReturnHistoryIndex(Map historyMap) {
+  int index = -1;
+  for (int i = 0; i < _playHistory.length; i++) {
+    if (_playHistory.getAt(i)['id'] == historyMap['id']) {
+      index = i;
+      //break;
+    }
+  }
+  return index;
+}
+
+void checkAndAddPlayHistory(Map historyMap) async {
+  int index = _checkAndReturnHistoryIndex(historyMap);
+  if (index == -1) {
+    _addPlayHistory(historyMap);
+  } else {
+    await _playHistory.deleteAt(index);
+    await _playHistory.add(historyMap);
   }
 }

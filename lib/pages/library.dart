@@ -1,4 +1,6 @@
+import 'package:beats/pages/history_page.dart';
 import 'package:beats/utils/player_manager.dart';
+import 'package:beats/widgets/play_history.dart';
 import 'package:flutter/material.dart';
 
 import 'library/favourite_playlists.dart';
@@ -22,6 +24,27 @@ class _LibraryState extends State<Library> {
     return ListView(
       shrinkWrap: true,
       children: [
+        ListTile(
+          dense: true,
+          trailing: IconButton(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const HistoryPage(),
+              ),
+            ),
+            icon: const Icon(Icons.keyboard_arrow_right),
+          ),
+          leading: const Icon(Icons.history),
+          title: Text(
+            'History',
+            style: TextStyle(
+              fontSize: PlayerManager.size.width * 0.05,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        const PlayHistory(),
         ListTile(
           onTap: () => Navigator.push(
             context,

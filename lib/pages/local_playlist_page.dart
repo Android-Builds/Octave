@@ -80,7 +80,8 @@ class _LocalPlaylistPageState extends State<LocalPlaylistPage> {
                     Row(
                       children: [
                         ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () => PlayerManager.addToPlaylistAndPlay(
+                              widget.playlist.songs),
                           child: const Text('Play All'),
                         ),
                         ElevatedButton(

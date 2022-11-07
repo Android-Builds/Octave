@@ -66,45 +66,47 @@ class _MoodsAndGenresState extends State<MoodsAndGenres> {
                     ),
                     items[index]['playlists'].length == 2
                         ? SizedBox(
-                            height: PlayerManager.size.height * 0.35,
+                            height: PlayerManager.size.height * 0.2,
                             child: ListView.builder(
+                              padding: const EdgeInsets.all(10.0),
                               itemCount: items[index]['playlists'].length,
                               scrollDirection: Axis.horizontal,
-                              physics: const NeverScrollableScrollPhysics(),
                               itemBuilder: (context, internalIndex) {
                                 Map playlist =
                                     items[index]['playlists'][internalIndex];
-                                return GestureDetector(
-                                  onTap: () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => PlaylistPage(
-                                        playlistId: playlist['browseId'],
-                                        thumbnail: playlist['thumbnail'],
+                                return SizedBox(
+                                  width: PlayerManager.size.width * 0.7,
+                                  child: GestureDetector(
+                                    onTap: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => PlaylistPage(
+                                          playlistId: playlist['browseId'],
+                                          thumbnail: playlist['thumbnail'],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  child: PlaylistItem(
-                                    title: playlist['title'],
-                                    subtitle: playlist['subtitle'],
-                                    thumbnail: playlist['thumbnail'],
-                                    width: PlayerManager.size.width * 0.45,
-                                    titleMaxLine: 1,
-                                    subtitleMaxLine: 2,
+                                    child: PlaylistItem(
+                                      title: playlist['title'],
+                                      subtitle: playlist['subtitle'],
+                                      thumbnail: playlist['thumbnail'],
+                                    ),
                                   ),
                                 );
                               },
-                            ))
+                            ),
+                          )
                         : SizedBox(
-                            height: PlayerManager.size.height * 0.7,
+                            height: PlayerManager.size.height * 0.35,
                             child: GridView.builder(
+                              padding: const EdgeInsets.all(10.0),
                               shrinkWrap: true,
                               itemCount: items[index]['playlists'].length,
                               scrollDirection: Axis.horizontal,
                               gridDelegate:
                                   const SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 2,
-                                childAspectRatio: 1.6,
+                                childAspectRatio: 0.4,
                               ),
                               itemBuilder: (context, internalIndex) {
                                 Map playlist =
@@ -123,8 +125,6 @@ class _MoodsAndGenresState extends State<MoodsAndGenres> {
                                     title: playlist['title'],
                                     subtitle: playlist['subtitle'],
                                     thumbnail: playlist['thumbnail'],
-                                    titleMaxLine: 1,
-                                    subtitleMaxLine: 2,
                                   ),
                                 );
                               },

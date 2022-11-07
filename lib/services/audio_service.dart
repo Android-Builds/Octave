@@ -3,6 +3,7 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:beats/api/youtube_api.dart';
+import 'package:beats/utils/db_helper.dart';
 import 'package:beats/utils/player_manager.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:rxdart/rxdart.dart';
@@ -164,6 +165,20 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     });
 
     _player.currentIndexStream.listen(updateLyricsAvialability);
+
+    _player.currentIndexStream.listen((index) {
+      if (index == null ||
+          _player.playerState.processingState == ProcessingState.idle) {
+        return;
+      }
+      Map songHistoryMap = {};
+      songHistoryMap['id'] = queue.value[index].id;
+      songHistoryMap['title'] = queue.value[index].title;
+      songHistoryMap['album'] = queue.value[index].album;
+      songHistoryMap['thumbnail'] = queue.value[index].artUri.toString();
+      songHistoryMap['time'] = DateTime.now();
+      checkAndAddPlayHistory(songHistoryMap);
+    });
 
     _effectiveSequence
         .map((sequence) =>

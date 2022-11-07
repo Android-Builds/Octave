@@ -53,26 +53,55 @@ class SongAndArtistItem extends StatelessWidget {
       child: Column(
         children: [
           artist
-              ? CircleAvatar(
-                  radius: width / 2,
-                  child: ClipOval(
-                    child: thumbnailWidget(),
+              ? Container(
+                  height: width,
+                  width: width,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.secondary,
+                    shape: BoxShape.circle,
                   ),
-                )
-              : Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(5.0),
+                  padding: const EdgeInsets.all(10.0),
+                  child: CircleAvatar(
+                    radius: width / 2,
+                    child: ClipOval(
                       child: thumbnailWidget(),
                     ),
-                    Icon(
-                      Ionicons.play,
-                      size: PlayerManager.size.width * 0.1,
-                      color:
-                          Theme.of(context).iconTheme.color!.withOpacity(0.8),
-                    ),
-                  ],
+                  ),
+                )
+              : Container(
+                  height: width,
+                  width: width,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.secondary,
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),
+                  padding: const EdgeInsets.all(15.0),
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(5.0),
+                        child: thumbnailWidget(),
+                      ),
+                      Positioned(
+                        right: -10,
+                        bottom: -25,
+                        child: CircleAvatar(
+                          backgroundColor:
+                              Theme.of(context).colorScheme.inversePrimary,
+                          radius: width * 0.1,
+                          child: Icon(
+                            Ionicons.play,
+                            size: width * 0.08,
+                            color: Theme.of(context)
+                                .iconTheme
+                                .color!
+                                .withOpacity(0.8),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
           const SizedBox(height: 10.0),
           SizedBox(
@@ -84,7 +113,7 @@ class SongAndArtistItem extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: width * 0.13,
-                //fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ),
@@ -98,6 +127,7 @@ class SongAndArtistItem extends StatelessWidget {
               style: TextStyle(
                 fontSize: width * 0.11,
                 color: Colors.grey,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ),
@@ -107,9 +137,9 @@ class SongAndArtistItem extends StatelessWidget {
   }
 
   Widget thumbnailWidget() => CachedNetworkImage(
-        imageUrl: thumbnail,
         height: width,
         width: width,
+        imageUrl: thumbnail,
         fit: BoxFit.cover,
         errorWidget: (context, url, error) {
           return CachedNetworkImage(

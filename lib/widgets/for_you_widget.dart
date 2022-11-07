@@ -1,7 +1,6 @@
 import 'package:beats/blocs/api_call_bloc/api_call_bloc.dart';
 import 'package:beats/pages/discover_page.dart';
 import 'package:beats/pages/trending_page.dart';
-import 'package:beats/utils/constants.dart';
 import 'package:beats/utils/player_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -55,23 +54,23 @@ class ForYouWidget extends StatelessWidget {
               shrinkWrap: true,
               physics: const AlwaysScrollableScrollPhysics(),
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(
-                    left: 20.0,
-                    bottom: 5.0,
-                  ),
-                  child: Row(
-                    children: [
-                      Text(
-                        '${getTimeSpecificGreetings()}, $userName',
-                        style: TextStyle(
-                          fontSize: PlayerManager.size.height * 0.04,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                // Padding(
+                //   padding: const EdgeInsets.only(
+                //     left: 20.0,
+                //     bottom: 5.0,
+                //   ),
+                //   child: Row(
+                //     children: [
+                //       Text(
+                //         '${getTimeSpecificGreetings()}, $userName',
+                //         style: TextStyle(
+                //           fontSize: PlayerManager.size.height * 0.04,
+                //           fontWeight: FontWeight.bold,
+                //         ),
+                //       ),
+                //     ],
+                //   ),
+                // ),
                 Row(
                   children: [
                     discoveryCards(

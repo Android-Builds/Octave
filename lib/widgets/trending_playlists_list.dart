@@ -1,11 +1,12 @@
 import 'package:beats/utils/player_manager.dart';
 import 'package:beats/widgets/playlist_item.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
 import '../classes/trending_playlists.dart';
 import '../pages/playlist_page.dart';
 
-class TrendingPlaylistWidget extends StatelessWidget {
+class TrendingPlaylistWidget extends StatefulWidget {
   final String title;
   final List<TrendingPlaylists> trendingPlaylists;
 
@@ -16,66 +17,116 @@ class TrendingPlaylistWidget extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<TrendingPlaylistWidget> createState() => _TrendingPlaylistWidgetState();
+}
+
+class _TrendingPlaylistWidgetState extends State<TrendingPlaylistWidget> {
+  final CarouselController _controller = CarouselController();
+  final ValueNotifier<int> _index = ValueNotifier<int>(0);
+
+  @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 20.0,
-            vertical: 10.0,
-          ),
-          child: Text(
-            title,
-            style: const TextStyle(
-              fontSize: 25.0,
-              fontWeight: FontWeight.bold,
-            ),
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 20.0,
+          vertical: 10.0,
+        ),
+        child: Text(
+          widget.title,
+          style: const TextStyle(
+            fontSize: 25.0,
+            fontWeight: FontWeight.bold,
           ),
         ),
-        SizedBox(
-          height: PlayerManager.size.height * 0.31,
-          child: NotificationListener<OverscrollNotification>(
-            // Suppress OverscrollNotification events that escape from the inner scrollable
-            onNotification: (notification) =>
-                notification.metrics.axisDirection != AxisDirection.down,
-            child: ListView.builder(
-              padding: const EdgeInsets.only(left: 10.0),
-              scrollDirection: Axis.horizontal,
-              itemCount: trendingPlaylists.length,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () async {
-                    if (title == 'Recommended music videos') {
-                      List<String> id =
-                          trendingPlaylists[index].playlistId.split(':');
-                      PlayerManager.playMusic(id[1], id[0], title);
-                    } else {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => PlaylistPage(
-                            playlistId: trendingPlaylists[index].playlistId,
-                            thumbnail: trendingPlaylists[index].thumbnail,
+      ),
+      Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(
+              top: 10.0,
+              right: 10.0,
+              left: 10.0,
+            ),
+            child: SizedBox(
+              height: PlayerManager.size.height * 0.18,
+              child: CarouselSlider(
+                carouselController: _controller,
+                items: List.generate(
+                  widget.trendingPlaylists.length,
+                  (index) => GestureDetector(
+                    onTap: () async {
+                      if (widget.title == 'Recommended music videos') {
+                        List<String> id = widget
+                            .trendingPlaylists[index].playlistId
+                            .split(':');
+                        PlayerManager.playMusic(id[1], id[0], widget.title);
+                      } else {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PlaylistPage(
+                              playlistId:
+                                  widget.trendingPlaylists[index].playlistId,
+                              thumbnail:
+                                  widget.trendingPlaylists[index].thumbnail,
+                            ),
                           ),
-                        ),
-                      );
-                    }
-                  },
-                  child: PlaylistItem(
-                    title: trendingPlaylists[index].title,
-                    subtitle: trendingPlaylists[index].subtitle,
-                    thumbnail: trendingPlaylists[index].thumbnail,
-                    width: PlayerManager.size.width * 0.45,
-                    titleMaxLine: 1,
-                    subtitleMaxLine: 2,
+                        );
+                      }
+                    },
+                    child: PlaylistItem(
+                      title: widget.trendingPlaylists[index].title,
+                      subtitle: widget.trendingPlaylists[index].subtitle,
+                      thumbnail: widget.trendingPlaylists[index].thumbnail,
+                    ),
                   ),
-                );
-              },
+                ),
+                options: CarouselOptions(
+                  height: PlayerManager.size.height * 0.3,
+                  aspectRatio: 16 / 9,
+                  viewportFraction: 0.8,
+                  initialPage: 0,
+                  enableInfiniteScroll: true,
+                  reverse: false,
+                  autoPlay: false,
+                  autoPlayInterval: const Duration(seconds: 3),
+                  autoPlayAnimationDuration: const Duration(milliseconds: 800),
+                  autoPlayCurve: Curves.fastOutSlowIn,
+                  enlargeCenterPage: false,
+                  onPageChanged: (index, reason) {
+                    _index.value = index;
+                  },
+                  scrollDirection: Axis.horizontal,
+                ),
+              ),
             ),
           ),
-        ),
-      ],
-    );
+          ValueListenableBuilder(
+              valueListenable: _index,
+              builder: (context, index, _) {
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children:
+                      widget.trendingPlaylists.asMap().entries.map((entry) {
+                    return Container(
+                      width: 5.0,
+                      height: 5.0,
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 8.0, horizontal: 4.0),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .primary
+                            .withOpacity(index == entry.key ? 0.9 : 0.4),
+                      ),
+                    );
+                  }).toList(),
+                );
+              }),
+        ],
+      )
+    ]);
   }
 }
