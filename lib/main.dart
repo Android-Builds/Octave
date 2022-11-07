@@ -1,6 +1,6 @@
-import 'package:beats/api/youtube_api.dart';
-import 'package:beats/pages/dashboard_page.dart';
-import 'package:beats/utils/theme.dart';
+import 'package:octave/api/youtube_api.dart';
+import 'package:octave/pages/dashboard_page.dart';
+import 'package:octave/utils/theme.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -47,7 +47,7 @@ class MyApp extends StatelessWidget {
       child: DynamicColorBuilder(
         builder: (lightDynamic, darkDynamic) {
           return MaterialApp(
-            title: 'Beats',
+            title: 'octave',
             theme: AppTheme.theme(lightDynamic, Brightness.light),
             darkTheme: AppTheme.theme(darkDynamic, Brightness.dark),
             debugShowCheckedModeBanner: false,

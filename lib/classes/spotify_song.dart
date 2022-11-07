@@ -1,6 +1,6 @@
 // ignore_for_file: depend_on_referenced_packages
 
-import 'package:beats/api/youtube_api.dart';
+import 'package:octave/api/youtube_api.dart';
 import 'package:collection/collection.dart';
 
 class SpotifySong {

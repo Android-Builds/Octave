@@ -1,4 +1,4 @@
-import 'package:beats/classes/search_result.dart';
+import 'package:octave/classes/search_result.dart';
 
 class Artist {
   final String title;

@@ -1,7 +1,7 @@
 library dbhelper;
 
-import 'package:beats/classes/local_playlist.dart';
-import 'package:beats/classes/playlist.dart';
+import 'package:octave/classes/local_playlist.dart';
+import 'package:octave/classes/playlist.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 

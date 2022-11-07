@@ -1,5 +1,5 @@
-import 'package:beats/utils/player_manager.dart';
-import 'package:beats/widgets/playlist_item.dart';
+import 'package:octave/utils/player_manager.dart';
+import 'package:octave/widgets/playlist_item.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 

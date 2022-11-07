@@ -1,6 +1,6 @@
-import 'package:beats/api/spotify_api.dart';
-import 'package:beats/classes/spotify_song.dart';
-import 'package:beats/utils/player_manager.dart';
+import 'package:octave/api/spotify_api.dart';
+import 'package:octave/classes/spotify_song.dart';
+import 'package:octave/utils/player_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 

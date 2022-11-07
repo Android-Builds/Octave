@@ -1,6 +1,6 @@
 // ignore_for_file: depend_on_referenced_packages
 
-import 'package:beats/classes/trending_songs.dart';
+import 'package:octave/classes/trending_songs.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 

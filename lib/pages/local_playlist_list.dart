@@ -1,10 +1,10 @@
 import 'package:audio_service/audio_service.dart';
-import 'package:beats/classes/local_playlist.dart';
-import 'package:beats/pages/local_playlist_page.dart';
-import 'package:beats/utils/db_helper.dart';
-import 'package:beats/utils/player_manager.dart';
-import 'package:beats/utils/utility.dart';
-import 'package:beats/widgets/collage.dart';
+import 'package:octave/classes/local_playlist.dart';
+import 'package:octave/pages/local_playlist_page.dart';
+import 'package:octave/utils/db_helper.dart';
+import 'package:octave/utils/player_manager.dart';
+import 'package:octave/utils/utility.dart';
+import 'package:octave/widgets/collage.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 

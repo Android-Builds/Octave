@@ -1,9 +1,9 @@
 import 'package:audio_service/audio_service.dart';
-import 'package:beats/pages/local_playlist_list.dart';
-import 'package:beats/pages/playlist_page.dart';
-import 'package:beats/utils/constants.dart';
-import 'package:beats/widgets/marquee_widget.dart';
-import 'package:beats/widgets/player/player_image.dart';
+import 'package:octave/pages/local_playlist_list.dart';
+import 'package:octave/pages/playlist_page.dart';
+import 'package:octave/utils/constants.dart';
+import 'package:octave/widgets/marquee_widget.dart';
+import 'package:octave/widgets/player/player_image.dart';
 import 'package:flutter/material.dart';
 import 'package:miniplayer/miniplayer.dart' as mp;
 

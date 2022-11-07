@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:beats/utils/player_manager.dart';
+import 'package:octave/utils/player_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 

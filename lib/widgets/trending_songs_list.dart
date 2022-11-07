@@ -1,5 +1,5 @@
-import 'package:beats/utils/player_manager.dart';
-import 'package:beats/widgets/song_and_artist_item.dart';
+import 'package:octave/utils/player_manager.dart';
+import 'package:octave/widgets/song_and_artist_item.dart';
 import 'package:flutter/material.dart';
 import '../classes/trending_songs.dart';
 

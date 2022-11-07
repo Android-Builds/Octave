@@ -1,4 +1,4 @@
-import 'package:beats/api/youtube_api.dart';
+import 'package:octave/api/youtube_api.dart';
 
 class SearchResult {
   final String title;

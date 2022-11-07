@@ -1,8 +1,8 @@
 import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
-import 'package:beats/widgets/player/common.dart';
-import 'package:beats/widgets/marquee_widget.dart';
+import 'package:octave/widgets/player/common.dart';
+import 'package:octave/widgets/marquee_widget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 

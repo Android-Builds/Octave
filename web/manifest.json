@@ -1,6 +1,6 @@
 {
-    "name": "beats",
-    "short_name": "beats",
+    "name": "octave",
+    "short_name": "octave",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

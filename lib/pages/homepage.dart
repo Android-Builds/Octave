@@ -1,6 +1,6 @@
-import 'package:beats/pages/library.dart';
-import 'package:beats/widgets/for_you_widget.dart';
-import 'package:beats/widgets/miniplayer_bottom_padder.dart';
+import 'package:octave/pages/library.dart';
+import 'package:octave/widgets/for_you_widget.dart';
+import 'package:octave/widgets/miniplayer_bottom_padder.dart';
 import 'package:flutter/material.dart';
 import '../classes/universal_search_delegate.dart';
 import '../utils/player_manager.dart';

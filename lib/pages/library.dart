@@ -1,6 +1,6 @@
-import 'package:beats/pages/history_page.dart';
-import 'package:beats/utils/player_manager.dart';
-import 'package:beats/widgets/play_history.dart';
+import 'package:octave/pages/history_page.dart';
+import 'package:octave/utils/player_manager.dart';
+import 'package:octave/widgets/play_history.dart';
 import 'package:flutter/material.dart';
 
 import 'library/favourite_playlists.dart';

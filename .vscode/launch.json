@@ -5,18 +5,18 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "beats",
+            "name": "octave",
             "request": "launch",
             "type": "dart"
         },
         {
-            "name": "beats (profile mode)",
+            "name": "octave (profile mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile"
         },
         {
-            "name": "beats (release mode)",
+            "name": "octave (release mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "release"

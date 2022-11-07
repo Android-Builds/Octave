@@ -1,7 +1,7 @@
 // ignore_for_file: depend_on_referenced_packages
 
 import 'package:audio_service/audio_service.dart';
-import 'package:beats/api/youtube_api.dart';
+import 'package:octave/api/youtube_api.dart';
 import 'package:flutter/material.dart';
 import 'package:miniplayer/miniplayer.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';

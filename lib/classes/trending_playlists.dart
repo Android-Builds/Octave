@@ -1,4 +1,4 @@
-import 'package:beats/utils/utility.dart';
+import 'package:octave/utils/utility.dart';
 
 class TrendingPlaylists {
   final String thumbnail;

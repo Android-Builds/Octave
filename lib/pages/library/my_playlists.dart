@@ -1,5 +1,5 @@
-import 'package:beats/pages/local_playlist_list.dart';
-import 'package:beats/utils/db_helper.dart';
+import 'package:octave/pages/local_playlist_list.dart';
+import 'package:octave/utils/db_helper.dart';
 import 'package:flutter/material.dart';
 
 class MyPlaylists extends StatelessWidget {

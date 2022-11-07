@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:beats/classes/spotify_song.dart';
+import 'package:octave/classes/spotify_song.dart';
 import 'package:http/http.dart';
 
 class SpotifyApi {

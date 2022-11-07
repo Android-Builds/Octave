@@ -1,7 +1,7 @@
-import 'package:beats/blocs/api_call_bloc/api_call_bloc.dart';
-import 'package:beats/pages/discover_page.dart';
-import 'package:beats/pages/trending_page.dart';
-import 'package:beats/utils/player_manager.dart';
+import 'package:octave/blocs/api_call_bloc/api_call_bloc.dart';
+import 'package:octave/pages/discover_page.dart';
+import 'package:octave/pages/trending_page.dart';
+import 'package:octave/utils/player_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ionicons/ionicons.dart';

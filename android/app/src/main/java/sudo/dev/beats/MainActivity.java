@@ -1,4 +1,4 @@
-package sudo.dev.beats;
+package sudo.dev.octave;
 
 import io.flutter.embedding.android.FlutterActivity;
 

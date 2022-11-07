@@ -1,8 +1,8 @@
-import 'package:beats/classes/local_playlist.dart';
-import 'package:beats/utils/player_manager.dart';
-import 'package:beats/utils/utility.dart';
-import 'package:beats/widgets/collage.dart';
-import 'package:beats/widgets/playlist_song_list.dart';
+import 'package:octave/classes/local_playlist.dart';
+import 'package:octave/utils/player_manager.dart';
+import 'package:octave/utils/utility.dart';
+import 'package:octave/widgets/collage.dart';
+import 'package:octave/widgets/playlist_song_list.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 

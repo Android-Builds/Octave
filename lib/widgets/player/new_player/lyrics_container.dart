@@ -1,6 +1,6 @@
 import 'package:audio_service/audio_service.dart';
-import 'package:beats/api/youtube_api.dart';
-import 'package:beats/blocs/api_call_bloc/api_call_bloc.dart';
+import 'package:octave/api/youtube_api.dart';
+import 'package:octave/blocs/api_call_bloc/api_call_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

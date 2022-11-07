@@ -2,13 +2,13 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:audio_service/audio_service.dart';
-import 'package:beats/classes/artist.dart';
-import 'package:beats/classes/playlist.dart';
-import 'package:beats/classes/search_result.dart';
-import 'package:beats/classes/trending_artists.dart';
-import 'package:beats/classes/trending_playlists.dart';
-import 'package:beats/utils/player_manager.dart';
-import 'package:beats/utils/utility.dart';
+import 'package:octave/classes/artist.dart';
+import 'package:octave/classes/playlist.dart';
+import 'package:octave/classes/search_result.dart';
+import 'package:octave/classes/trending_artists.dart';
+import 'package:octave/classes/trending_playlists.dart';
+import 'package:octave/utils/player_manager.dart';
+import 'package:octave/utils/utility.dart';
 import 'package:http/http.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 

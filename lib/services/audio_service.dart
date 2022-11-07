@@ -2,9 +2,9 @@
 
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
-import 'package:beats/api/youtube_api.dart';
-import 'package:beats/utils/db_helper.dart';
-import 'package:beats/utils/player_manager.dart';
+import 'package:octave/api/youtube_api.dart';
+import 'package:octave/utils/db_helper.dart';
+import 'package:octave/utils/player_manager.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:rxdart/rxdart.dart';
 

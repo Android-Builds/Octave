@@ -1,6 +1,6 @@
 library constants;
 
-import 'package:beats/utils/player_manager.dart';
+import 'package:octave/utils/player_manager.dart';
 import 'package:flutter/material.dart';
 
 const minHeight = kBottomNavigationBarHeight * 1.2;

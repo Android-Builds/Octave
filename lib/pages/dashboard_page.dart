@@ -1,5 +1,5 @@
-import 'package:beats/pages/homepage.dart';
-import 'package:beats/widgets/player/new_player/player.dart';
+import 'package:octave/pages/homepage.dart';
+import 'package:octave/widgets/player/new_player/player.dart';
 import 'package:flutter/material.dart';
 
 import '../utils/player_manager.dart';

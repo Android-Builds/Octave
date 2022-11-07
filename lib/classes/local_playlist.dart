@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:audio_service/audio_service.dart';
-import 'package:beats/utils/utility.dart';
+import 'package:octave/utils/utility.dart';
 
 class LocalPlaylist {
   final String title;

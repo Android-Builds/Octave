@@ -1,8 +1,8 @@
 import 'package:audio_service/audio_service.dart';
-import 'package:beats/widgets/player/player_playlist.dart';
-import 'package:beats/widgets/player/poster_widget.dart';
+import 'package:octave/widgets/player/player_playlist.dart';
+import 'package:octave/widgets/player/poster_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:beats/widgets/player/control_buttons.dart';
+import 'package:octave/widgets/player/control_buttons.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'common.dart';
 import '../../utils/player_manager.dart';

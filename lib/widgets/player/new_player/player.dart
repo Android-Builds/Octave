@@ -1,8 +1,8 @@
 // ignore_for_file: depend_on_referenced_packages
 
 import 'package:audio_service/audio_service.dart';
-import 'package:beats/widgets/player/new_player/collapsed_player.dart';
-import 'package:beats/widgets/player/new_player/expaned_player.dart';
+import 'package:octave/widgets/player/new_player/collapsed_player.dart';
+import 'package:octave/widgets/player/new_player/expaned_player.dart';
 import 'package:flutter/material.dart';
 import 'package:miniplayer/miniplayer.dart';
 import '../common.dart';

@@ -1,6 +1,6 @@
-import 'package:beats/pages/playlist_page.dart';
-import 'package:beats/utils/db_helper.dart';
-import 'package:beats/utils/player_manager.dart';
+import 'package:octave/pages/playlist_page.dart';
+import 'package:octave/utils/db_helper.dart';
+import 'package:octave/utils/player_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';

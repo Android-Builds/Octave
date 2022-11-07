@@ -1,5 +1,5 @@
 import 'package:audio_service/audio_service.dart';
-import 'package:beats/utils/player_manager.dart';
+import 'package:octave/utils/player_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ionicons/ionicons.dart';

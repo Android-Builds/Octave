@@ -1,11 +1,11 @@
 import 'package:akar_icons_flutter/akar_icons_flutter.dart';
 import 'package:audio_service/audio_service.dart';
-import 'package:beats/pages/local_playlist_list.dart';
-import 'package:beats/pages/playlist_page.dart';
-import 'package:beats/utils/constants.dart';
-import 'package:beats/utils/db_helper.dart';
-import 'package:beats/utils/player_manager.dart';
-import 'package:beats/utils/utility.dart';
+import 'package:octave/pages/local_playlist_list.dart';
+import 'package:octave/pages/playlist_page.dart';
+import 'package:octave/utils/constants.dart';
+import 'package:octave/utils/db_helper.dart';
+import 'package:octave/utils/player_manager.dart';
+import 'package:octave/utils/utility.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';

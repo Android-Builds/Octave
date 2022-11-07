@@ -1,10 +1,10 @@
-import 'package:beats/api/youtube_api.dart';
-import 'package:beats/blocs/search_bloc/search_bloc.dart';
-import 'package:beats/classes/search_result.dart';
-import 'package:beats/pages/artists_page.dart';
-import 'package:beats/pages/playlist_page.dart';
-import 'package:beats/utils/db_helper.dart';
-import 'package:beats/utils/player_manager.dart';
+import 'package:octave/api/youtube_api.dart';
+import 'package:octave/blocs/search_bloc/search_bloc.dart';
+import 'package:octave/classes/search_result.dart';
+import 'package:octave/pages/artists_page.dart';
+import 'package:octave/pages/playlist_page.dart';
+import 'package:octave/utils/db_helper.dart';
+import 'package:octave/utils/player_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
