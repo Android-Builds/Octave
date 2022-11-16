@@ -74,7 +74,7 @@ class HistoryPage extends StatelessWidget {
                                 physics: const NeverScrollableScrollPhysics(),
                                 itemBuilder: (context, innerIndex) => ListTile(
                                   leading: ClipRRect(
-                                    borderRadius: BorderRadius.circular(5.0),
+                                    borderRadius: BorderRadius.circular(3.0),
                                     child: CachedNetworkImage(
                                       imageUrl: history[index][innerIndex]
                                           ['thumbnail']!,

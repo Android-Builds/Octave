@@ -124,6 +124,8 @@ class PlayerManager {
           items.insert(0, song);
           index = 0;
         }
+      } else {
+        items.add(song);
       }
       await addToPlaylistAndPlay(items, index);
       //panelController.open();

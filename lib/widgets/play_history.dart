@@ -24,7 +24,7 @@ class PlayHistory extends StatelessWidget {
                     padding: const EdgeInsets.all(5.0),
                     scrollDirection: Axis.horizontal,
                     itemCount:
-                        songHistory.length < 10 ? 10 : songHistory.length,
+                        songHistory.length > 10 ? 10 : songHistory.length,
                     itemBuilder: (context, index) => TextButton(
                       onPressed: () => {},
                       child: Column(
@@ -32,7 +32,7 @@ class PlayHistory extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           ClipRRect(
-                            borderRadius: BorderRadius.circular(10.0),
+                            borderRadius: BorderRadius.circular(5.0),
                             child: CachedNetworkImage(
                               imageUrl: songHistory[index]['thumbnail']!,
                               width: PlayerManager.size.width * 0.35,

@@ -14,22 +14,11 @@ class HomePage extends StatelessWidget {
       headerSliverBuilder: (context, innerBoxIsScrolled) {
         return [
           SliverAppBar(
-            title: RichText(
-              text: TextSpan(
-                text: 'Be',
-                style: DefaultTextStyle.of(context).style.copyWith(
-                      fontSize: PlayerManager.size.width * 0.06,
-                      fontWeight: FontWeight.bold,
-                    ),
-                children: <TextSpan>[
-                  TextSpan(
-                    text: 'a',
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
-                  const TextSpan(text: 'ts'),
-                ],
+            title: Text(
+              'Octave',
+              style: TextStyle(
+                fontSize: PlayerManager.size.width * 0.06,
+                fontWeight: FontWeight.bold,
               ),
             ),
             actions: [

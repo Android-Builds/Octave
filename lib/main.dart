@@ -47,7 +47,7 @@ class MyApp extends StatelessWidget {
       child: DynamicColorBuilder(
         builder: (lightDynamic, darkDynamic) {
           return MaterialApp(
-            title: 'octave',
+            title: 'Octave',
             theme: AppTheme.theme(lightDynamic, Brightness.light),
             darkTheme: AppTheme.theme(darkDynamic, Brightness.dark),
             debugShowCheckedModeBanner: false,

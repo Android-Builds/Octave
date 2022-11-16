@@ -223,65 +223,7 @@ class UniversalSearchDelegate extends SearchDelegate<String> {
                 ),
               );
             })
-        : FutureBuilder(
-            future: PlayerManager.getSearchSuggestions(query),
-            builder: (context, AsyncSnapshot snapshot) {
-              if (snapshot.hasData) {
-                if (snapshot.data.runtimeType != List<List<dynamic>>) {
-                  urlSearchResultMap = snapshot.data;
-                  return urlResultListTile(context);
-                } else {
-                  List<List<dynamic>> suggestions = snapshot.data;
-                  return suggestions.first.isEmpty
-                      ? const SizedBox.shrink()
-                      : ListView.builder(
-                          padding: const EdgeInsets.all(10.0),
-                          itemCount: suggestions.length,
-                          itemBuilder: (context, index) {
-                            return ListTile(
-                              onTap: () {
-                                query = suggestions[index].join();
-                                showResults(context);
-                              },
-                              title: RichText(
-                                text: TextSpan(
-                                  style: DefaultTextStyle.of(context)
-                                      .style
-                                      .copyWith(
-                                        fontSize:
-                                            PlayerManager.size.width * 0.045,
-                                      ),
-                                  children: List.generate(
-                                    suggestions[index].length,
-                                    (childIndex) => TextSpan(
-                                      text: suggestions[index][childIndex],
-                                      style: TextStyle(
-                                        fontWeight: childIndex == 0
-                                            ? FontWeight.bold
-                                            : FontWeight.normal,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              trailing: IconButton(
-                                icon: Icon(
-                                  Icons.north_west,
-                                  size: PlayerManager.size.width * 0.045,
-                                ),
-                                onPressed: () {
-                                  query = suggestions[index].join();
-                                },
-                              ),
-                            );
-                          },
-                        );
-                }
-              } else {
-                return const SizedBox.shrink();
-              }
-            },
-          );
+        : const SizedBox.shrink();
   }
 
   Widget urlResultListTile(BuildContext context) {
